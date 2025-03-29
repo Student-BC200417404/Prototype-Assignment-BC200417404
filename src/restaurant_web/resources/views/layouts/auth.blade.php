@@ -11,7 +11,7 @@
     <meta name="keywords" content="">
     <meta name="author" content="Awaiken">
     <!-- Page Title -->
-    <title>{{ config('app.name') }} -  @yield('title')</title>
+    <title>@yield('title') - {{ config('app.name') }}</title>
     <!-- Favicon Icon -->
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('images/favicon.png') }}">
     <!-- Google Fonts Css-->
@@ -22,10 +22,6 @@
         rel="stylesheet">
     <!-- Bootstrap Css -->
     <link href="{{ asset('/css/bootstrap.min.css') }}" rel="stylesheet" media="screen">
-    <!-- SlickNav Css -->
-    <link href="{{ asset('/css/slicknav.min.css') }}" rel="stylesheet">
-    <!-- Swiper Css -->
-    <link rel="stylesheet" href="{{ asset('css/swiper-bundle.min.css') }}">
     <!-- Font Awesome Icon Css-->
     <link href="{{ asset('css/all.min.css') }}" rel="stylesheet" media="screen">
     <!-- Animated Css -->
@@ -36,7 +32,7 @@
     <link rel="stylesheet" href="{{ asset('css/mousecursor.css') }}">
     <!-- Main Custom Css -->
     <link href="{{ asset('css/custom.css') }}" rel="stylesheet" media="screen">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     @stack('styles')
 </head>
 <style>
@@ -48,6 +44,7 @@
    --df-messenger-send-icon: #878fac;
    --df-messenger-user-message: #479b3d;
   }
+  
 </style>
 <body>
 
@@ -60,16 +57,8 @@
     </div>
     <!-- Preloader End -->
 
-    <!-- Header Start -->
-    @include('template.header')
-    <!-- Header End -->
-
     @yield('content')
 
-    <!-- Main Footer Section Start -->
-    @include('template.footer')
- 
-    <!-- Main Footer Section End -->
 
     <!-- Jquery Library File -->
     @include('template.script')
@@ -84,8 +73,7 @@
 ></df-messenger>
 
     <!-- Custom js  -->
-    @yield('scripts')
+    @stack('scripts')
 </body>
-
 
 </html>

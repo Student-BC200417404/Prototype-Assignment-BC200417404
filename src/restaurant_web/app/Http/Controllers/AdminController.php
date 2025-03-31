@@ -46,16 +46,7 @@ class AdminController extends Controller
         return view('admin.auth.login');
     }
 
-    /**
-     * Show admin dashboard
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function dashboard()
-    {
-        return view('admin.dashboard');
-    }
-
+   
     /**
      * Handle admin login
      *

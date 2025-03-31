@@ -4,6 +4,15 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WebController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\MenuController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\ReservationController;
+use App\Http\Controllers\Admin\TableController;
+use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\StaffController;
+use App\Http\Controllers\Admin\SettingController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -43,9 +52,88 @@ Route::prefix('admin')->group(function () {
     Route::post('/logout', [AdminController::class, 'logout'])->name('admin.logout');
     
     // Protected admin routes
-    Route::middleware(['auth.admin'])->group(function () {
-        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-        // Add other admin routes here
+    Route::middleware(['auth'])->group(function () {
+        // Dashboard
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+
+        // Menu Management
+        Route::resource('menu', MenuController::class)->names([
+            'index' => 'admin.menu.index',
+            'create' => 'admin.menu.create',
+            'store' => 'admin.menu.store',
+            'edit' => 'admin.menu.edit',
+            'update' => 'admin.menu.update',
+            'destroy' => 'admin.menu.destroy',
+        ]);
+
+        // Categories
+        Route::resource('categories', CategoryController::class)->names([
+            'index' => 'admin.categories.index',
+            'create' => 'admin.categories.create',
+            'store' => 'admin.categories.store',
+            'edit' => 'admin.categories.edit',
+            'update' => 'admin.categories.update',
+            'destroy' => 'admin.categories.destroy',
+        ]);
+
+        // Orders
+        Route::prefix('orders')->group(function () {
+            Route::get('/', [OrderController::class, 'index'])->name('admin.orders.index');
+            Route::get('/pending', [OrderController::class, 'pending'])->name('admin.orders.pending');
+            Route::get('/completed', [OrderController::class, 'completed'])->name('admin.orders.completed');
+            Route::get('/{order}', [OrderController::class, 'show'])->name('admin.orders.show');
+            Route::patch('/{order}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.status.update');
+        });
+
+        // Reservations
+        Route::prefix('reservations')->group(function () {
+            Route::get('/', [ReservationController::class, 'index'])->name('admin.reservations.index');
+            Route::get('/pending', [ReservationController::class, 'pending'])->name('admin.reservations.pending');
+            Route::get('/create', [ReservationController::class, 'create'])->name('admin.reservations.create');
+            Route::post('/', [ReservationController::class, 'store'])->name('admin.reservations.store');
+            Route::patch('/{reservation}/status', [ReservationController::class, 'updateStatus'])->name('admin.reservations.status.update');
+        });
+
+        // Tables
+        Route::resource('tables', TableController::class)->names([
+            'index' => 'admin.tables.index',
+            'create' => 'admin.tables.create',
+            'store' => 'admin.tables.store',
+            'edit' => 'admin.tables.edit',
+            'update' => 'admin.tables.update',
+            'destroy' => 'admin.tables.destroy',
+        ]);
+
+        // Customers
+        Route::resource('customers', CustomerController::class)->names([
+            'index' => 'admin.customers.index',
+            'create' => 'admin.customers.create',
+            'store' => 'admin.customers.store',
+            'edit' => 'admin.customers.edit',
+            'update' => 'admin.customers.update',
+            'destroy' => 'admin.customers.destroy',
+        ]);
+
+        // Staff
+        Route::resource('staff', StaffController::class)->names([
+            'index' => 'admin.staff.index',
+            'create' => 'admin.staff.create',
+            'store' => 'admin.staff.store',
+            'edit' => 'admin.staff.edit',
+            'update' => 'admin.staff.update',
+            'destroy' => 'admin.staff.destroy',
+        ]);
+
+        // Settings
+        Route::prefix('settings')->group(function () {
+            Route::get('/general', [SettingController::class, 'general'])->name('admin.settings.general');
+            Route::post('/general', [SettingController::class, 'updateGeneral']);
+            Route::get('/profile', [SettingController::class, 'profile'])->name('admin.profile');
+            Route::post('/profile', [SettingController::class, 'updateProfile']);
+        });
+
+        // Reports
+        Route::get('/reports', [DashboardController::class, 'reports'])->name('admin.reports');
     });
 });
 

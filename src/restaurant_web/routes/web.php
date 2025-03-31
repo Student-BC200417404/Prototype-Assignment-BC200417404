@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\TableController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\Auth\AdminAuthController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -49,7 +50,9 @@ Route::prefix('admin')->group(function () {
     // Admin authentication routes
     Route::get('/login', [AdminController::class, 'showLoginForm'])->name('admin.login');
     Route::post('/login', [AdminController::class, 'login'])->name('admin.login.submit');
-    Route::post('/logout', [AdminController::class, 'logout'])->name('admin.logout');
+    Route::post('/logout', [AdminAuthController::class, 'logout'])
+        ->name('admin.logout')
+        ->middleware('auth');
     
     // Protected admin routes
     Route::middleware(['auth'])->group(function () {

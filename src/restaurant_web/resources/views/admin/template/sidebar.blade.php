@@ -149,17 +149,17 @@
       <li class="dropdown">
         <a href="javascript:void(0)">
           <iconify-icon icon="solar:user-id-outline" class="menu-icon"></iconify-icon>
-          <span>Staff</span> 
+          <span>Users</span> 
         </a>
         <ul class="sidebar-submenu">
           <li>
-            <a href="{{ route('admin.staff.index') }}">
-              <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> All Staff
+            <a href="{{ route('admin.user.index') }}">
+              <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> All User
             </a>
           </li>
           <li>
-            <a href="{{ route('admin.staff.create') }}">
-              <i class="ri-circle-fill circle-icon text-success-main w-auto"></i> Add Staff
+            <a href="{{ route('admin.user.create') }}">
+              <i class="ri-circle-fill circle-icon text-success-main w-auto"></i> Add User
             </a>
           </li>
         </ul>

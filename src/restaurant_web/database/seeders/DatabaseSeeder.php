@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Menu;
 
 class DatabaseSeeder extends Seeder
 {
@@ -20,10 +21,15 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call([
-            AdminSeeder::class,
-            CategorySeeder::class,
-            FaqSeeder::class,
+           // AdminSeeder::class,
+           // CategorySeeder::class,
+           // FaqSeeder::class,
+              MenuSeeder::class, // Add this line
+
             // ... other seeders
         ]);
+
+        // Seed the menu with 50 fake items
+        Menu::factory()->count(50)->create();
     }
 }

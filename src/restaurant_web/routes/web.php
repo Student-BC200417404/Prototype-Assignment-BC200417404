@@ -11,7 +11,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ReservationController;
 use App\Http\Controllers\Admin\TableController;
 use App\Http\Controllers\Admin\CustomerController;
-use App\Http\Controllers\Admin\StaffController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\Auth\AdminAuthController;
 /*
@@ -60,25 +60,22 @@ Route::prefix('admin')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
         // Menu Management
-        Route::resource('menu', MenuController::class)->names([
-            'index' => 'admin.menu.index',
-            'create' => 'admin.menu.create',
-            'store' => 'admin.menu.store',
-            'edit' => 'admin.menu.edit',
-            'update' => 'admin.menu.update',
-            'destroy' => 'admin.menu.destroy',
-        ]);
+        Route::get('menu', [MenuController::class, 'index'])->name('admin.menu.index');
+        Route::get('menu/create', [MenuController::class, 'create'])->name('admin.menu.create');
+        Route::post('menu', [MenuController::class, 'store'])->name('admin.menu.store');
+        Route::get('menu/{id}/edit', [MenuController::class, 'edit'])->name('admin.menu.edit');
+        Route::put('menu/{id}', [MenuController::class, 'update'])->name('admin.menu.update');
+        Route::delete('menu/{id}', [MenuController::class, 'destroy'])->name('admin.menu.destroy');
+        Route::get('menu/data', [MenuController::class, 'getData'])->name('admin.menu.data');
 
         // Categories
-        Route::resource('categories', CategoryController::class)->names([
-            'index' => 'admin.categories.index',
-            'create' => 'admin.categories.create',
-            'store' => 'admin.categories.store',
-            'edit' => 'admin.categories.edit',
-            'update' => 'admin.categories.update',
-            'destroy' => 'admin.categories.destroy',
-        ]);
-
+        Route::get('categories', [CategoryController::class, 'index'])->name('admin.categories.index');
+        Route::get('categories/data', [CategoryController::class, 'getData'])->name('admin.categories.data');
+        Route::get('categories/create', [CategoryController::class, 'create'])->name('admin.categories.create');
+        Route::post('categories', [CategoryController::class, 'store'])->name('admin.categories.store');
+        Route::get('categories/{id}/edit', [CategoryController::class, 'edit'])->name('admin.categories.edit');
+        Route::put('categories/{id}', [CategoryController::class, 'update'])->name('admin.categories.update');
+        Route::delete('categories/{id}', [CategoryController::class, 'destroy'])->name('admin.categories.destroy');
         // Orders
         Route::prefix('orders')->group(function () {
             Route::get('/', [OrderController::class, 'index'])->name('admin.orders.index');
@@ -98,34 +95,28 @@ Route::prefix('admin')->group(function () {
         });
 
         // Tables
-        Route::resource('tables', TableController::class)->names([
-            'index' => 'admin.tables.index',
-            'create' => 'admin.tables.create',
-            'store' => 'admin.tables.store',
-            'edit' => 'admin.tables.edit',
-            'update' => 'admin.tables.update',
-            'destroy' => 'admin.tables.destroy',
-        ]);
+        Route::get('tables', [TableController::class, 'index'])->name('admin.tables.index');
+        Route::get('tables/create', [TableController::class, 'create'])->name('admin.tables.create');
+        Route::post('tables', [TableController::class, 'store'])->name('admin.tables.store');
+        Route::get('tables/{id}/edit', [TableController::class, 'edit'])->name('admin.tables.edit');
+        Route::put('tables/{id}', [TableController::class, 'update'])->name('admin.tables.update');
+        Route::delete('tables/{id}', [TableController::class, 'destroy'])->name('admin.tables.destroy');
 
         // Customers
-        Route::resource('customers', CustomerController::class)->names([
-            'index' => 'admin.customers.index',
-            'create' => 'admin.customers.create',
-            'store' => 'admin.customers.store',
-            'edit' => 'admin.customers.edit',
-            'update' => 'admin.customers.update',
-            'destroy' => 'admin.customers.destroy',
-        ]);
+        Route::get('customers', [CustomerController::class, 'index'])->name('admin.customers.index');
+        Route::get('customers/create', [CustomerController::class, 'create'])->name('admin.customers.create');
+        Route::post('customers', [CustomerController::class, 'store'])->name('admin.customers.store');
+        Route::get('customers/{id}/edit', [CustomerController::class, 'edit'])->name('admin.customers.edit');
+        Route::put('customers/{id}', [CustomerController::class, 'update'])->name('admin.customers.update');
+        Route::delete('customers/{id}', [CustomerController::class, 'destroy'])->name('admin.customers.destroy');
 
         // Staff
-        Route::resource('staff', StaffController::class)->names([
-            'index' => 'admin.staff.index',
-            'create' => 'admin.staff.create',
-            'store' => 'admin.staff.store',
-            'edit' => 'admin.staff.edit',
-            'update' => 'admin.staff.update',
-            'destroy' => 'admin.staff.destroy',
-        ]);
+        Route::get('user', [UserController::class, 'index'])->name('admin.user.index');
+        Route::get('user/create', [UserController::class, 'create'])->name('admin.user.create');
+        Route::post('user', [UserController::class, 'store'])->name('admin.user.store');
+        Route::get('user/{id}/edit', [UserController::class, 'edit'])->name('admin.user.edit');
+        Route::put('user/{id}', [UserController::class, 'update'])->name('admin.user.update');
+        Route::delete('user/{id}', [UserController::class, 'destroy'])->name('admin.user.destroy');
 
         // Settings
         Route::prefix('settings')->group(function () {

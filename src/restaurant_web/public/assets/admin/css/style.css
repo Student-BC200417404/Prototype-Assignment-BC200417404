@@ -12318,6 +12318,8 @@ h6, .h6 {
 .basic-data-table .dt-layout-row .dt-search .dt-input {
   color: var(--text-secondary-light) !important;
   height: 2.5rem;
+  text-align: left!important;
+  padding: 10px!important;
   border: 1px solid var(--input-form-light) !important;
   border-radius: 10px !important;
   -webkit-border-radius: 10px !important;

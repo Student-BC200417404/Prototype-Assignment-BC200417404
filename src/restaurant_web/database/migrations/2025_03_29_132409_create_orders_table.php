@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id');
-            $table->foreignId('reservation_id')->nullable();
+            $table->integer('customer_id');
+            $table->integer('reservation_id')->nullable();
             $table->string('order_number')->unique();
             $table->enum('type', ['dine-in', 'takeaway', 'delivery'])->default('dine-in');
             $table->enum('status', ['pending', 'preparing', 'ready', 'delivered', 'completed', 'cancelled'])->default('pending');

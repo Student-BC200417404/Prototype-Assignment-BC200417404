@@ -48,15 +48,6 @@
                                 </div>
                             </div>
                             <div class="col-12">
-                                <label class="form-label">Slug</label>
-                                <div class="icon-field">
-                                    <span class="icon">
-                                        <iconify-icon icon="f7:link"></iconify-icon>
-                                    </span>
-                                    <input type="text" name="slug" class="form-control" placeholder="Enter Slug" required>
-                                </div>
-                            </div>
-                            <div class="col-12">
                                 <label class="form-label">Description</label>
                                 <div class="icon-field">
                                     <span class="icon">
@@ -98,8 +89,8 @@
                                 </select>
                             </div>
                             <div class="col-12">
-                                <div class="modal-footer">
-                                    <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary">Cancel</a>
+                                <div class="card-footer d-flex justify-content-end">
+                                    <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary me-2">Cancel</a>
                                     <button type="submit" class="btn btn-primary">Save Category</button>
                                 </div>
                             </div>
@@ -111,6 +102,9 @@
     </div>
 </div>
 
+@endsection 
+@push('custom-scripts')
+    
 <script>
     // Image upload preview
     document.getElementById('upload-file').addEventListener('change', function(event) {
@@ -136,5 +130,60 @@
         uploadedImgContainer.classList.add('d-none');
         document.getElementById('upload-file').value = ''; // Clear the file input
     });
+
+    $(document).ready(function() {
+        $('#categoryForm').on('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            $.ajax({
+                url: $(this).attr('action'), // Get the action URL from the form
+                type: 'POST',
+                data: new FormData(this), // Send the form data
+                contentType: false, // Prevent jQuery from overriding the content type
+                processData: false, // Prevent jQuery from processing the data
+                success: function(data) {
+                    if (data.success) {
+                        // Show success message with SweetAlert
+                        Swal.fire({
+                            title: 'Success!',
+                            text: data.message,
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = "{{ route('admin.categories.index') }}"; // Redirect to categories index
+                            }
+                        });
+                    } else {
+                        // Show error message with SweetAlert
+                        Swal.fire({
+                            title: 'Error!',
+                            text: data.message,
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                    
+                    // Extract the error message from the response
+                    const response = xhr.responseJSON;
+                    const errorMessage = response ? response.message : 'An error occurred while submitting the form.';
+                    
+                    // Show error message with SweetAlert
+                    Swal.fire({
+                        title: 'Error!',
+                        text: errorMessage,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            });
+        });
+    });
 </script>
-@endsection 
+
+
+
+@endpush

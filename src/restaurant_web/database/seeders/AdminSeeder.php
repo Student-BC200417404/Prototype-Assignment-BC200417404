@@ -16,7 +16,6 @@ class AdminSeeder extends Seeder
             'email' => 'admin@admin.com', // You can change this email
             'password' => Hash::make('password'), // You can change this password
             'role' => 'admin',
-            'phone' => '1234567890',
             'email_verified_at' => now(),
             'is_active' => true,
             'created_at' => now(),

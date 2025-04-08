@@ -69,13 +69,14 @@ Route::prefix('admin')->group(function () {
         Route::get('menu/data', [MenuController::class, 'getData'])->name('admin.menu.data');
 
         // Categories
-        Route::get('categories', [CategoryController::class, 'index'])->name('admin.categories.index');
-        Route::get('categories/data', [CategoryController::class, 'getData'])->name('admin.categories.data');
-        Route::get('categories/create', [CategoryController::class, 'create'])->name('admin.categories.create');
-        Route::post('categories', [CategoryController::class, 'store'])->name('admin.categories.store');
-        Route::get('categories/{id}/edit', [CategoryController::class, 'edit'])->name('admin.categories.edit');
-        Route::put('categories/{id}', [CategoryController::class, 'update'])->name('admin.categories.update');
-        Route::delete('categories/{id}', [CategoryController::class, 'destroy'])->name('admin.categories.destroy');
+        Route::get('/categories', [CategoryController::class, 'index'])->name('admin.categories.index');
+        Route::get('/categories/{id}/edit', [CategoryController::class, 'edit'])->name('admin.categories.edit');
+        Route::put('/categories/{id}', [CategoryController::class, 'update'])->name('admin.categories.update');
+        Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->name('admin.categories.destroy');
+        Route::get('/categories/data', [CategoryController::class, 'getData'])->name('admin.categories.data');
+        Route::get('/categories/create', [CategoryController::class, 'create'])->name('admin.categories.create');
+        Route::post('/categories', [CategoryController::class, 'store'])->name('admin.categories.store');
+
         // Orders
         Route::prefix('orders')->group(function () {
             Route::get('/', [OrderController::class, 'index'])->name('admin.orders.index');

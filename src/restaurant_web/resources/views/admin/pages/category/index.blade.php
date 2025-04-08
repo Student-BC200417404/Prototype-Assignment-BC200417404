@@ -92,6 +92,52 @@
     </div>
 </div>
 
+<!-- Edit Category Modal -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editCategoryModalLabel">Edit Category</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="editCategoryForm">
+                <div class="modal-body">
+                    <input type="hidden" id="editCategoryId" name="id">
+                    <div class="form-group">
+                        <label for="editName">Name</label>
+                        <input type="text" class="form-control" id="editName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDescription">Description</label>
+                        <textarea class="form-control" id="editDescription" name="description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editImage">Image URL</label>
+                        <input type="text" class="form-control" id="editImage" name="image" placeholder="Optional">
+                    </div>
+                    <div class="form-group">
+                        <label for="editDisplayOrder">Display Order</label>
+                        <input type="number" class="form-control" id="editDisplayOrder" name="display_order" placeholder="Optional">
+                    </div>
+                    <div class="form-group">
+                        <label for="editIsActive">Active</label>
+                        <select class="form-control" id="editIsActive" name="is_active">
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @if(session('error'))
 <div class="alert alert-danger">
     {{ session('error') }}
@@ -115,7 +161,18 @@
             columns: [
                 { data: 'name', name: 'name' },
                 { data: 'image', name: 'image' },
-                { data: 'action', name: 'action', orderable: false, searchable: false }
+                { 
+                    data: 'action', 
+                    name: 'action', 
+                    orderable: false, 
+                    searchable: false,
+                    render: function(data, type, row) {
+                        return `
+                            <button class="btn btn-sm btn-primary edit-category" data-id="${row.id}">Edit</button>
+                            <button class="btn btn-sm btn-danger delete-category" data-id="${row.id}">Delete</button>
+                        `;
+                    }
+                }
             ],
             fixedHeader: true // Enable fixed header
         });
@@ -125,7 +182,94 @@
             // Add your AJAX call to save the category here
         });
 
-        // Handle edit and delete actions here
+        // Handle edit button click
+        $(document).on('click', '.edit-category', function() {
+            console.log('Edit button clicked'); // Debug log
+            const categoryId = $(this).data('id');
+            // Fetch category data and populate the modal
+            $.ajax({
+                url: `/admin/categories/${categoryId}/edit`,
+                type: 'GET',
+                success: function(data) {
+                    $('#editCategoryId').val(data.id);
+                    $('#editName').val(data.name);
+                    $('#editDescription').val(data.description);
+                    $('#editImage').val(data.image);
+                    $('#editDisplayOrder').val(data.display_order);
+                    $('#editIsActive').val(data.is_active);
+                    $('#editCategoryModal').modal('show');
+                }
+            });
+        });
+
+        // Handle edit form submission
+        $('#editCategoryForm').on('submit', function(e) {
+            e.preventDefault();
+            const categoryId = $('#editCategoryId').val();
+            $.ajax({
+                url: `/admin/categories/${categoryId}`,
+                type: 'PUT',
+                data: $(this).serialize(),
+                success: function(data) {
+                    $('#editCategoryModal').modal('hide');
+                    table.ajax.reload(); // Reload the DataTable
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Category updated successfully.',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
+                },
+                error: function(xhr) {
+                    const response = xhr.responseJSON;
+                    Swal.fire({
+                        title: 'Error!',
+                        text: response.message,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            });
+        });
+
+        // Handle delete button click
+        $(document).on('click', '.delete-category', function() {
+            console.log('Delete button clicked'); // Debug log
+            const categoryId = $(this).data('id');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/admin/categories/${categoryId}`,
+                        type: 'DELETE',
+                        success: function(data) {
+                            table.ajax.reload(); // Reload the DataTable
+                            Swal.fire(
+                                'Deleted!',
+                                'Your category has been deleted.',
+                                'success'
+                            );
+                        },
+                        error: function(xhr) {
+                            const response = xhr.responseJSON;
+                            Swal.fire({
+                                title: 'Error!',
+                                text: response.message,
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    });
+                }
+            });
+        });
     });
 </script>
 @endpush

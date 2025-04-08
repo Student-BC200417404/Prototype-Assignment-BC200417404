@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('faqs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('category_id');
+            $table->integer('category_id');
             $table->string('question');
             $table->text('answer');
             $table->integer('display_order')->default(0);

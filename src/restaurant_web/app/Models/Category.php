@@ -9,4 +9,15 @@ class Category extends Model
 {
     use HasFactory;
     protected $table = 'categories';
+    
+    // Add the fillable property
+    protected $fillable = [
+        'parent_id',
+        'name',
+        'slug',
+        'description',
+        'image',
+        'display_order',
+        'is_active',
+    ];
 }

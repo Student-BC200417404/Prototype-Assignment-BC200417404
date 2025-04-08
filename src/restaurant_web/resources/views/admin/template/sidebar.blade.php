@@ -10,14 +10,32 @@
   <div class="sidebar-menu-area">
     <ul class="sidebar-menu" id="sidebar-menu">
       <li class="{{ request()->is('admin/dashboard') ? 'active-page' : '' }}">
-        <a href="{{ route('admin.dashboard') }}" class="active-page">
+        <a href="{{ route('admin.dashboard') }}" class="{{ request()->is('admin/dashboard') ? 'active-page' : '' }}">
           <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
           <span>Dashboard</span> 
         </a>
       </li>
 
       <li class="sidebar-menu-group-title">Menu Management</li>
-      
+         <li class="dropdown">
+        <a href="javascript:void(0)">
+          <iconify-icon icon="solar:list-bold" class="menu-icon"></iconify-icon>
+          <span>Categories</span> 
+        </a>
+        <ul class="sidebar-submenu">
+          <li>
+            <a href="{{ route('admin.categories.index') }}">
+              <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> All Categories
+            </a>
+          </li>
+          <li>
+            <a href="{{ route('admin.categories.create') }}">
+              <i class="ri-circle-fill circle-icon text-success-main w-auto"></i> Add Category
+            </a>
+          </li>
+        </ul>
+      </li>
+
       <li class="dropdown">
         <a href="javascript:void(0)">
           <iconify-icon icon="fluent:food-24-regular" class="menu-icon"></iconify-icon>
@@ -37,27 +55,27 @@
         </ul>
       </li>
 
-      <li class="dropdown">
+   
+
+      <li class="sidebar-menu-group-title">Orders & Reservations</li>
+ <li class="dropdown">
         <a href="javascript:void(0)">
-          <iconify-icon icon="solar:list-bold" class="menu-icon"></iconify-icon>
-          <span>Categories</span> 
+          <iconify-icon icon="mingcute:storage-line" class="menu-icon"></iconify-icon>
+          <span>Tables</span> 
         </a>
         <ul class="sidebar-submenu">
           <li>
-            <a href="{{ route('admin.categories.index') }}">
-              <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> All Categories
+            <a href="{{ route('admin.tables.index') }}">
+              <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> All Tables
             </a>
           </li>
           <li>
-            <a href="{{ route('admin.categories.create') }}">
-              <i class="ri-circle-fill circle-icon text-success-main w-auto"></i> Add Category
+            <a href="{{ route('admin.tables.create') }}">
+              <i class="ri-circle-fill circle-icon text-success-main w-auto"></i> Add Table
             </a>
           </li>
         </ul>
       </li>
-
-      <li class="sidebar-menu-group-title">Orders & Reservations</li>
-
       <li class="dropdown">
         <a href="javascript:void(0)">
           <iconify-icon icon="solar:cart-4-outline" class="menu-icon"></iconify-icon>
@@ -106,24 +124,7 @@
         </ul>
       </li>
 
-      <li class="dropdown">
-        <a href="javascript:void(0)">
-          <iconify-icon icon="mingcute:storage-line" class="menu-icon"></iconify-icon>
-          <span>Tables</span> 
-        </a>
-        <ul class="sidebar-submenu">
-          <li>
-            <a href="{{ route('admin.tables.index') }}">
-              <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> All Tables
-            </a>
-          </li>
-          <li>
-            <a href="{{ route('admin.tables.create') }}">
-              <i class="ri-circle-fill circle-icon text-success-main w-auto"></i> Add Table
-            </a>
-          </li>
-        </ul>
-      </li>
+     
 
       <li class="sidebar-menu-group-title">User Management</li>
 

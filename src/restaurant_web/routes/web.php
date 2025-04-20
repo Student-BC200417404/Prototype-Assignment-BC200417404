@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\Auth\AdminAuthController;
+use App\Http\Controllers\ChatBotController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -133,5 +134,8 @@ Route::prefix('admin')->group(function () {
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/dialogflow/webhook', [ChatBotController::class, 'handleRequest']);
 
-Route::get('/chatbot', [WebController::class, 'chatbot'])->name('chatbot');
+Route::get('/testChatbot', function () {
+    return view('test'); // Call the view here
+});

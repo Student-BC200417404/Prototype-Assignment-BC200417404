@@ -22,8 +22,7 @@
                         <!-- Hero Button Start -->
                         <div class="hero-btn wow fadeInUp" data-wow-delay="0.4s">
                             <a href="{{ route('contact') }}" class="btn-default">book a table</a>
-                            <a href="#" class="download-app-btn">download app <i class="fa-brands fa-google-play"></i></a>
-                        </div>
+                            </div>
                         <!-- Hero Button End -->
                     </div>
                     <!-- Hero Content End -->                   

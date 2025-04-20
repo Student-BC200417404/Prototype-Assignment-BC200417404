@@ -13,7 +13,7 @@
     <!-- Magnific js file -->
     <script src="{{ asset('js/jquery.magnific-popup.min.js') }}"></script>
     <!-- SmoothScroll -->
-    <script src="{{ asset('js/SmoothScroll.js') }}"></script>
+    <!-- <script src="{{ asset('js/SmoothScroll.js') }}"></script> -->
     <!-- Parallax js -->
     <script src="{{ asset('js/parallaxie.js') }}"></script>
     <!-- MagicCursor js file -->

@@ -75,10 +75,10 @@
     @include('template.script')
 <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
 
-   <df-messenger
-   
+
+<df-messenger
   intent="WELCOME"
-  chat-title="restaurant-chat-bot"
+  chat-title="eatz-ai-agent"
   agent-id="432e62ff-5ba4-43dd-b537-e26d52efc3c0"
   language-code="en"
 ></df-messenger>

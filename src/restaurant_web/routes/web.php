@@ -139,3 +139,12 @@ Route::post('/dialogflow/webhook', [ChatBotController::class, 'handleRequest']);
 Route::get('/testChatbot', function () {
     return view('test'); // Call the view here
 });
+Route::get('/clear-cache', function () {
+    \Artisan::call('view:clear');
+    \Artisan::call('route:clear');
+    \Artisan::call('config:cache');
+    \Artisan::call('optimize');
+
+    return redirect()->back()->with('status', 'Cache cleared and optimized successfully!');
+});
+

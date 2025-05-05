@@ -1,0 +1,13 @@
+IMPORTANT NOTICE
+
+This project is being updated until the viva, and all documentation will also be updated before the viva.
+
+In the `src` directory, there is a folder named `restaurant_web`, which contains all the scenarios and project requirements for creating the entire application in Laravel.
+
+You can download this project from the following Git repository:
+
+https://github.com/Student-BC200417404/Prototype-Assignment-BC200417404
+
+You can also access additional files from the following Google Drive link:
+
+https://drive.google.com/drive/folders/1i12NtBkENSEDdhkHxl57OX2fcCwvYy1U?usp=sharing

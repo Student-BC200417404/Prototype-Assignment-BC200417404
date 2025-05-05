@@ -1,118 +1,135 @@
-# Prototype-Assignment-BC200417404
+# Final-Project-BC200417404
+## Important Notice
+
+This project is being updated until the viva, and all documentation will also be updated before the viva.
+
+## Project Structure
+
+In the `src` directory, there is a folder named `restaurant_web`, which contains all the scenarios and project requirements for creating the entire application in Laravel.
 
 # Laravel Project Setup Guide
 
+This guide will help you set up the Laravel project from scratch, including cloning the repository, installing dependencies, setting up the environment, and accessing the admin panel.
+
 ## Prerequisites
 
-Before you begin, ensure you have met the following requirements:
+Before you begin, ensure you have the following installed on your machine:
 
-- **PHP**: Version 8.0 or higher
-- **Composer**: Dependency manager for PHP
-- **Node.js**: Version 14 or higher (for front-end assets)
-- **MySQL**: Version 5.7 or higher (or any other database supported by Laravel)
+- PHP (version 8.0 or higher)
+- Composer
+- MySQL or another database server
+- Git
 
-## Cloning the Repository
+## Step 1: Clone the Repository
 
-To download the project, follow these steps:
+To get started, open your terminal and run the following command to clone the repository:
 
-1. Open your terminal (Command Prompt, PowerShell, or Terminal).
-2. Navigate to the directory where you want to clone the project.
-3. Run the following command to clone the repository:
+```bash
+git clone https://github.com/Student-BC200417404/Prototype-Assignment-BC200417404.git
+```
 
-   ```bash
-   git clone https://github.com/your-username/your-repo-name.git
-   ```
+This command will create a local copy of the project in a directory named `Prototype-Assignment-BC200417404`.
 
-   Replace `your-username` and `your-repo-name` with your GitHub username and the repository name.
+## Step 2: Navigate to the Project Directory
 
-4. Navigate into the project directory:
+Change into the project directory:
 
-   ```bash
-   cd your-repo-name
-   ```
+```bash
+cd Prototype-Assignment-BC200417404
+```
 
-## Installing Dependencies
+## Step 3: Install Dependencies
 
-Once you have cloned the repository, you need to install the project dependencies:
+Install the required PHP dependencies using Composer. Run the following command:
 
-1. Run the following command to install PHP dependencies using Composer:
+```bash
+composer install
+```
 
-   ```bash
-   composer install
-   ```
+This command will read the `composer.json` file and install all the necessary packages.
 
-2. If your project uses front-end assets, install Node.js dependencies:
+## Step 4: Set Up Environment Variables
 
-   ```bash
-   npm install
-   ```
+Copy the example environment file to create your own `.env` file:
 
-## Setting Up the Environment
+```bash
+cp .env.example .env
+```
 
-1. Copy the `.env.example` file to create a new `.env` file:
+Open the `.env` file in a text editor and configure your database settings. Look for the following lines and update them according to your database configuration:
 
-   ```bash
-   cp .env.example .env
-   ```
+```plaintext
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=your_database_name
+DB_USERNAME=your_database_user
+DB_PASSWORD=your_database_password
+```
 
-2. Open the `.env` file in a text editor and configure your database and other environment settings.
+Make sure to replace `your_database_name`, `your_database_user`, and `your_database_password` with your actual database credentials.
 
-3. Generate the application key:
+## Step 5: Generate Application Key
 
-   ```bash
-   php artisan key:generate
-   ```
+Run the following command to generate a unique application key for your Laravel application:
 
-## Running Migrations
+```bash
+php artisan key:generate
+```
 
-If your project uses a database, run the migrations to set up the database schema:
+This command will set the `APP_KEY` value in your `.env` file.
+
+## Step 6: Run Migrations
+
+To set up your database schema, run the migrations with the following command:
 
 ```bash
 php artisan migrate
 ```
 
-## Seeding the Database
+This command will create the necessary tables in your database as defined in the migration files.
 
-To populate your database with initial data, you can use seeders. Follow these steps:
+## Step 7: Seed the Database
 
-1. If you have created seeders, you can run them using the following command:
+To populate your database with initial data, run the seeder:
 
-   ```bash
-   php artisan db:seed
-   ```
+```bash
+php artisan db:seed
+```
 
-2. If you want to run a specific seeder, you can use the `--class` option:
+This command will execute the seeder classes defined in your project, allowing you to insert sample data into your database.
 
-   ```bash
-   php artisan db:seed --class=YourSeederClassName
-   ```
+## Step 8: Serve the Application
 
-   Replace `YourSeederClassName` with the name of the seeder you want to run.
-
-## Starting the Development Server
-
-To start the Laravel development server, run the following command:
+You can now serve the application using the built-in PHP server. Run the following command:
 
 ```bash
 php artisan serve
 ```
 
-You can now access your application at `http://localhost:8000`.
+This will start the server, and you should see output indicating that the application is running at `http://localhost:8000`.
 
-## Additional Commands
+## Step 9: Access the Application
 
-- **Run Tests**: To run the tests, use the following command:
+Open your web browser and navigate to:
 
-  ```bash
-  php artisan test
-  ```
+```
+http://localhost:8000
+```
 
-- **Compile Assets**: If you have front-end assets, compile them using:
+You should see your Laravel application running.
 
-  ```bash
-  npm run dev
-  ```
+## Step 10: Access the Admin Panel
+
+To access the admin panel, go to the following URL:
+
+```
+http://localhost:8000/admin
+```
+
+Log in using your admin credentials. If you haven't set up any users yet, you may need to create an admin user through the database or modify the seeder to include an admin account.
 
 ## Conclusion
 
-You have successfully set up the Laravel project. If you encounter any issues, please refer to the Laravel documentation or check the project's issues on GitHub.
+You have successfully set up your Laravel project! If you encounter any issues, please refer to the Laravel documentation or check the project's issues on GitHub for assistance.
+

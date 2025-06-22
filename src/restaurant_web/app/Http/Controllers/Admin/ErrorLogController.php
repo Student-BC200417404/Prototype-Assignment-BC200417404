@@ -50,7 +50,7 @@ class ErrorLogController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->paginate(20);
 
-            return view('admin.pages.error-logs.index', compact('errorLogs'));
+            return view('admin.pages.errorlog.index', compact('errorLogs'));
         } catch (\Exception $e) {
             Log::error('Failed to load error logs: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Failed to load error logs.');
@@ -64,7 +64,7 @@ class ErrorLogController extends Controller
     {
         try {
             $errorLog = ErrorLog::with('user')->findOrFail($id);
-            return view('admin.pages.error-logs.show', compact('errorLog'));
+            return view('admin.pages.errorlog.show', compact('errorLog'));
         } catch (\Exception $e) {
             return redirect()->route('admin.error-logs.index')
                 ->with('error', 'Error log not found.');

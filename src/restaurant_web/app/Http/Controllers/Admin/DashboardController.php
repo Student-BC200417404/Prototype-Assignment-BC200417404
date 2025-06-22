@@ -17,4 +17,9 @@ class DashboardController extends Controller
 
         return view('admin.pages.dashboard');
     }
+
+    public function reports()
+    {
+        return view('admin.pages.reports');
+    }
 } 

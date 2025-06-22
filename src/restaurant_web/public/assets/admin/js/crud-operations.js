@@ -75,7 +75,22 @@ function initializeDataTables() {
                 $('[data-bs-toggle="tooltip"]').tooltip();
             }
         };
-        
+        // Add explicit columns and default order for menu-datatable
+        if (tableId === 'menu-datatable' || table.attr('id') === 'menu-datatable') {
+            config.columns = [
+                { data: 'checkbox', orderable: false, searchable: false },
+                { data: 'id' },
+                { data: 'image' },
+                { data: 'name' },
+                { data: 'category_name' },
+                { data: 'price_formatted' },
+                { data: 'status' },
+                { data: 'features' },
+                { data: 'created_at' },
+                { data: 'action', orderable: false, searchable: false }
+            ];
+            config.order = [[1, 'asc']]; // Order by ID ascending
+        }
         try {
             // Initialize DataTable
             const dataTable = table.DataTable(config);

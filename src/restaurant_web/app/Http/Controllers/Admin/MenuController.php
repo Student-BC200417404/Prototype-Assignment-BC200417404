@@ -30,6 +30,9 @@ class MenuController extends Controller
             $menus = Menu::with('category')->select('menus.*');
             
             return DataTables::of($menus)
+                ->addColumn('checkbox', function ($menu) {
+                    return '<input type="checkbox" class="menu-checkbox" value="' . $menu->id . '">';
+                })
                 ->addColumn('category_name', function ($menu) {
                     return $menu->category ? $menu->category->name : 'N/A';
                 })
@@ -61,7 +64,7 @@ class MenuController extends Controller
                                 </button>
                             </div>';
                 })
-                ->rawColumns(['status', 'features', 'action'])
+                ->rawColumns(['checkbox', 'status', 'features', 'action'])
                 ->make(true);
         } catch (\Exception $e) {
             Log::error('Failed to fetch menu data: ' . $e->getMessage());

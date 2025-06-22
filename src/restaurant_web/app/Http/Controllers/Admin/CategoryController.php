@@ -16,7 +16,7 @@ class CategoryController extends Controller
     public function index()
     {
         try {
-            return view('admin.pages.crud.category.index');
+            return view('admin.pages.category.index');
         } catch (\Exception $e) {
             $this->logError($e, request());
             return redirect()->back()->with('error', 'Failed to load categories.');
@@ -72,7 +72,7 @@ class CategoryController extends Controller
     public function create()
     {
         try {
-            return view('admin.pages.crud.category.create');
+            return view('admin.pages.category.create');
         } catch (\Exception $e) {
             $this->logError($e, request());
             return redirect()->back()->with('error', 'Failed to load create form.');
@@ -135,7 +135,7 @@ class CategoryController extends Controller
     {
         try {
             $category = Category::withCount('menus')->findOrFail($id);
-            return view('admin.pages.crud.category.show', compact('category'));
+            return view('admin.pages.category.show', compact('category'));
         } catch (\Exception $e) {
             $this->logError($e, request());
             return redirect()->route('admin.categories.index')
@@ -147,7 +147,7 @@ class CategoryController extends Controller
     {
         try {
             $category = Category::findOrFail($id);
-            return view('admin.pages.crud.category.edit', compact('category'));
+            return view('admin.pages.category.edit', compact('category'));
         } catch (\Exception $e) {
             $this->logError($e, request());
             return redirect()->route('admin.categories.index')

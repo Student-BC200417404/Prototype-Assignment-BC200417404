@@ -20,26 +20,26 @@
     <div class="col-xxl-2 col-md-4 col-sm-6 mb-4">
         <div class="card text-center p-3 bg-purple-light">
             <span class="w-44-px h-44-px radius-8 d-inline-flex justify-content-center align-items-center text-xl mb-12 bg-lilac-200 border border-lilac-400 text-lilac-600">
-                <i class="ri-price-tag-3-fill"></i>
-            </span>
-            <span class="text-neutral-700 d-block">Total Sales</span>
-            <h6 class="mb-0 mt-4">$170,500.09</h6>
-        </div>
-    </div>
+                                        <i class="ri-price-tag-3-fill"></i>
+                                    </span>
+                                    <span class="text-neutral-700 d-block">Total Sales</span>
+                                    <h6 class="mb-0 mt-4">$170,500.09</h6>
+                                </div>
+                            </div>
     <div class="col-xxl-2 col-md-4 col-sm-6 mb-4">
         <div class="card text-center p-3 bg-success-100">
             <span class="w-44-px h-44-px radius-8 d-inline-flex justify-content-center align-items-center text-xl mb-12 bg-success-200 border border-success-400 text-success-600">
-                <i class="ri-shopping-cart-2-fill"></i>
-            </span>
-            <span class="text-neutral-700 d-block">Total Orders</span>
-            <h6 class="mb-0 mt-4">1,500</h6>
-        </div>
-    </div>
+                                        <i class="ri-shopping-cart-2-fill"></i>
+                                    </span>
+                                    <span class="text-neutral-700 d-block">Total Orders</span>
+                                    <h6 class="mb-0 mt-4">1,500</h6>
+                                </div>
+                            </div>
     <div class="col-xxl-2 col-md-4 col-sm-6 mb-4">
         <div class="card text-center p-3 bg-info-focus">
             <span class="w-44-px h-44-px radius-8 d-inline-flex justify-content-center align-items-center text-xl mb-12 bg-info-200 border border-info-400 text-info-600">
-                <i class="ri-group-3-fill"></i>
-            </span>
+                                        <i class="ri-group-3-fill"></i>
+                                    </span>
             <span class="text-neutral-700 d-block">Total Customers</span>
             <h6 class="mb-0 mt-4">2,350</h6>
         </div>
@@ -60,18 +60,18 @@
             </span>
             <span class="text-neutral-700 d-block">Reservations</span>
             <h6 class="mb-0 mt-4">320</h6>
-        </div>
-    </div>
+                                </div>
+                            </div>
     <div class="col-xxl-2 col-md-4 col-sm-6 mb-4">
         <div class="card text-center p-3 bg-secondary-100">
             <span class="w-44-px h-44-px radius-8 d-inline-flex justify-content-center align-items-center text-xl mb-12 bg-secondary-200 border border-secondary-400 text-secondary-600">
                 <i class="ri-money-dollar-circle-line"></i>
-            </span>
+                                    </span>
             <span class="text-neutral-700 d-block">Total Revenue</span>
             <h6 class="mb-0 mt-4">$98,200.00</h6>
         </div>
-    </div>
-</div>
+                                </div>
+                            </div>
 
 <div class="row gy-4 mt-2">
     <!-- Sales/Orders Chart -->
@@ -82,8 +82,8 @@
             </div>
             <div class="card-body">
                 <div id="sales-orders-chart" style="height: 300px;"></div>
-            </div>
-        </div>
+                        </div>
+                    </div>
     </div>
     <!-- Top Menu Items -->
     <div class="col-xxl-4 mb-4">
@@ -109,10 +109,10 @@
                         Chocolate Lava Cake <span class="badge bg-danger rounded-pill">150 sold</span>
                     </li>
                 </ul>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 <div class="row gy-4 mt-2">
     <!-- Recent Orders Table -->

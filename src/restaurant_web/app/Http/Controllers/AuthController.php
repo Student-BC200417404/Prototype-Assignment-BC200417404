@@ -31,17 +31,20 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
-            
+            // Redirect admin to admin login, all others (user/customer) to user portal
             if ($user->role === 'admin') {
                 Auth::logout();
                 return back()->withErrors([
                     'email' => 'Please use admin login page.',
                 ]);
             }
-
-            $request->session()->regenerate();
-            session(['user' => true]);
-            return redirect()->route('user.dashboard');
+            // Redirect both 'user' and 'customer' roles to user portal
+            if (in_array($user->role, ['user', 'customer'])) {
+                $request->session()->regenerate();
+                session(['user' => true]);
+                return redirect()->route('user.dashboard');
+            }
+            // Optionally handle other roles here
         }
 
         return back()->withErrors([

@@ -159,3 +159,26 @@ Route::get('/clear-cache', function () {
     return redirect()->back()->with('status', 'Cache cleared and optimized successfully!');
 });
 
+// User Portal Routes
+Route::middleware(['auth'])->prefix('user')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('pages.user.dashboard');
+    })->name('user.dashboard');
+
+    Route::get('/profile', function () {
+        return view('pages.user.profile');
+    })->name('user.profile');
+
+    Route::get('/orders', function () {
+        return view('pages.user.orders');
+    })->name('user.orders');
+
+    Route::get('/reservations', function () {
+        return view('pages.user.reservations');
+    })->name('user.reservations');
+
+    Route::get('/change-password', function () {
+        return view('pages.user.change-password');
+    })->name('user.change-password');
+});
+

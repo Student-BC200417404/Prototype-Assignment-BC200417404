@@ -1,275 +1,367 @@
 @extends('admin.layout.app')
 
+@section('title', 'Categories Management')
+
 @section('content')
 <div class="container">
     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
         <h6 class="fw-semibold mb-0">Categories</h6>
         <ul class="d-flex align-items-center gap-2">
             <li class="fw-medium">
-                <a href="index.html" class="d-flex align-items-center gap-1 hover-text-primary">
+                <a href="{{ route('admin.dashboard') }}" class="d-flex align-items-center gap-1 hover-text-primary">
                     <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
-                    Categories
+                    Dashboard
                 </a>
             </li>
             <li>-</li>
-            <li class="fw-medium">List</li>
+            <li class="fw-medium">Categories</li>
         </ul>
     </div>
 
+    <!-- Flash Messages -->
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="ri-check-line"></i> {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="ri-error-warning-line"></i> {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
 
     <div class="card basic-data-table">
         <div class="card-header">
             <div class="d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">List</h5>
-                <a class="btn btn-primary" href="{{ route('admin.categories.create') }}">Add Category</a>
+                <h5 class="card-title mb-0">All Categories</h5>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-warning btn-sm" id="bulkStatusBtn" style="display: none;">
+                        <i class="ri-settings-line"></i> Bulk Status
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm" id="bulkDeleteBtn" style="display: none;">
+                        <i class="ri-delete-bin-line"></i> Bulk Delete
+                    </button>
+                    <a href="{{ route('admin.categories.create') }}" class="btn btn-primary btn-sm">
+                        <i class="ri-add-line"></i> Add Category
+                    </a>
+                </div>
             </div>
         </div>
         <div class="card-body">
-            <table class="table bordered-table mb-0" id="categoryTable" data-page-length='10'>
-                <thead>
-                    <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">Image</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Data will be populated by DataTables -->
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-striped datatable" data-url="{{ route('admin.categories.data') }}">
+                    <thead>
+                        <tr>
+                            <th width="50">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="selectAll">
+                                </div>
+                            </th>
+                            <th>ID</th>
+                            <th>Image</th>
+                            <th>Name</th>
+                            <th>Synonym</th>
+                            <th>Status</th>
+                            <th>Display Order</th>
+                            <th>Menu Items</th>
+                            <th>Created</th>
+                            <th width="150">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be loaded via AJAX -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Add Category Modal -->
-<div class="modal fade" id="categoryModal" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog" role="document">
+<!-- Bulk Status Modal -->
+<div class="modal fade" id="bulkStatusModal" tabindex="-1" aria-labelledby="bulkStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="categoryModalLabel">Add Category</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title" id="bulkStatusModalLabel">Update Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="categoryForm">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <input type="text" class="form-control" id="name" name="name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="slug">Slug</label>
-                        <input type="text" class="form-control" id="slug" name="slug" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="description">Description</label>
-                        <textarea class="form-control" id="description" name="description"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="image">Image URL</label>
-                        <input type="text" class="form-control" id="image" name="image" placeholder="Optional">
-                    </div>
-                    <div class="form-group">
-                        <label for="display_order">Display Order</label>
-                        <input type="number" class="form-control" id="display_order" name="display_order"
-                            placeholder="Optional">
-                    </div>
-                    <div class="form-group">
-                        <label for="is_active">Active</label>
-                        <select class="form-control" id="is_active" name="is_active">
-                            <option value="1">Yes</option>
-                            <option value="0">No</option>
-                        </select>
-                    </div>
+            <div class="modal-body">
+                <p>Update status for <span id="selectedCount">0</span> selected categories:</p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="bulkStatus" id="statusActive" value="1">
+                    <label class="form-check-label" for="statusActive">
+                        Active
+                    </label>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save changes</button>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="bulkStatus" id="statusInactive" value="0">
+                    <label class="form-check-label" for="statusInactive">
+                        Inactive
+                    </label>
                 </div>
-            </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmBulkStatus">Update Status</button>
+            </div>
         </div>
     </div>
 </div>
-
-<!-- Edit Category Modal -->
-<div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editCategoryModalLabel">Edit Category</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form id="editCategoryForm">
-                <div class="modal-body">
-                    <input type="hidden" id="editCategoryId" name="id">
-                    <div class="form-group">
-                        <label for="editName">Name</label>
-                        <input type="text" class="form-control" id="editName" name="name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="editDescription">Description</label>
-                        <textarea class="form-control" id="editDescription" name="description"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="editImage">Image URL</label>
-                        <input type="text" class="form-control" id="editImage" name="image" placeholder="Optional">
-                    </div>
-                    <div class="form-group">
-                        <label for="editDisplayOrder">Display Order</label>
-                        <input type="number" class="form-control" id="editDisplayOrder" name="display_order" placeholder="Optional">
-                    </div>
-                    <div class="form-group">
-                        <label for="editIsActive">Active</label>
-                        <select class="form-control" id="editIsActive" name="is_active">
-                            <option value="1">Yes</option>
-                            <option value="0">No</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-@if(session('error'))
-<div class="alert alert-danger">
-    {{ session('error') }}
-</div>
-@endif
-
 @endsection
 
 @push('custom-scripts')
 <script>
-    $(document).ready(function () {
-        // Initialize DataTable with server-side processing and fixed header
-        var table = $('#categoryTable').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: {
-                url: "{{ route('admin.categories.data') }}", // Ensure this route is correct
-                type: 'GET',
-                dataType: 'json'
+$(document).ready(function() {
+    // Initialize DataTable
+    const table = $('.datatable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: $('.datatable').data('url'),
+            type: 'GET'
+        },
+        columns: [
+            {
+                data: null,
+                orderable: false,
+                searchable: false,
+                render: function(data, type, row) {
+                    return `<div class="form-check">
+                                <input class="form-check-input category-checkbox" type="checkbox" value="${row.id}">
+                            </div>`;
+                }
             },
-            columns: [
-                { data: 'name', name: 'name' },
-                { data: 'image', name: 'image' },
-                { 
-                    data: 'action', 
-                    name: 'action', 
-                    orderable: false, 
-                    searchable: false,
-                    render: function(data, type, row) {
-                        return `
-                            <button class="btn btn-sm btn-primary edit-category" data-id="${row.id}">Edit</button>
-                            <button class="btn btn-sm btn-danger delete-category" data-id="${row.id}">Delete</button>
-                        `;
-                    }
+            {data: 'id', name: 'id'},
+            {
+                data: 'image_preview', 
+                name: 'image',
+                orderable: false,
+                searchable: false
+            },
+            {data: 'name', name: 'name'},
+            {data: 'snonym', name: 'snonym'},
+            {data: 'status', name: 'is_active'},
+            {data: 'display_order', name: 'display_order'},
+            {data: 'menus_count', name: 'menus_count'},
+            {data: 'created_at_formatted', name: 'created_at'},
+            {
+                data: 'action',
+                name: 'actions',
+                orderable: false,
+                searchable: false
+            }
+        ],
+        order: [[1, 'desc']],
+        responsive: true,
+        language: {
+            search: "Search categories:",
+            lengthMenu: "Show _MENU_ categories per page",
+            info: "Showing _START_ to _END_ of _TOTAL_ categories",
+            infoEmpty: "Showing 0 to 0 of 0 categories",
+            infoFiltered: "(filtered from _MAX_ total categories)",
+            processing: "Loading categories...",
+            emptyTable: "No categories found",
+            zeroRecords: "No matching categories found"
+        }
+    });
+    
+    // Handle select all checkbox
+    $('#selectAll').on('change', function() {
+        $('.category-checkbox').prop('checked', this.checked);
+        updateBulkButtons();
+    });
+    
+    // Handle individual checkboxes
+    $(document).on('change', '.category-checkbox', function() {
+        updateBulkButtons();
+        
+        // Update select all checkbox
+        const totalCheckboxes = $('.category-checkbox').length;
+        const checkedCheckboxes = $('.category-checkbox:checked').length;
+        
+        if (checkedCheckboxes === 0) {
+            $('#selectAll').prop('indeterminate', false).prop('checked', false);
+        } else if (checkedCheckboxes === totalCheckboxes) {
+            $('#selectAll').prop('indeterminate', false).prop('checked', true);
+        } else {
+            $('#selectAll').prop('indeterminate', true);
+        }
+    });
+    
+    // Update bulk action buttons visibility
+    function updateBulkButtons() {
+        const selectedCount = $('.category-checkbox:checked').length;
+        
+        if (selectedCount > 0) {
+            $('#bulkStatusBtn, #bulkDeleteBtn').show();
+            $('#selectedCount').text(selectedCount);
+        } else {
+            $('#bulkStatusBtn, #bulkDeleteBtn').hide();
+        }
+    }
+    
+    // Handle bulk status button
+    $('#bulkStatusBtn').on('click', function() {
+        const selectedIds = $('.category-checkbox:checked').map(function() {
+            return $(this).val();
+        }).get();
+        
+        if (selectedIds.length === 0) {
+            showNotification('No categories selected', 'Please select categories to update.', 'warning');
+            return;
+        }
+        
+        $('#bulkStatusModal').modal('show');
+    });
+    
+    // Handle bulk status confirmation
+    $('#confirmBulkStatus').on('click', function() {
+        const selectedIds = $('.category-checkbox:checked').map(function() {
+            return $(this).val();
+        }).get();
+        
+        const status = $('input[name="bulkStatus"]:checked').val();
+        
+        if (!status) {
+            showNotification('No status selected', 'Please select a status.', 'warning');
+            return;
+        }
+        
+        $.ajax({
+            url: '{{ route("admin.categories.bulk-status") }}',
+            method: 'POST',
+            data: {
+                ids: selectedIds,
+                status: status
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    $('#bulkStatusModal').modal('hide');
+                    showNotification('Success', response.message, 'success');
+                    table.ajax.reload();
+                    $('.category-checkbox').prop('checked', false);
+                    $('#selectAll').prop('checked', false);
+                    updateBulkButtons();
                 }
-            ],
-            fixedHeader: true // Enable fixed header
-        });
-
-        $('#categoryForm').on('submit', function (e) {
-            e.preventDefault();
-            // Add your AJAX call to save the category here
-        });
-
-        // Handle edit button click
-        $(document).on('click', '.edit-category', function() {
-            console.log('Edit button clicked'); // Debug log
-            const categoryId = $(this).data('id');
-            // Fetch category data and populate the modal
-            $.ajax({
-                url: `/admin/categories/${categoryId}/edit`,
-                type: 'GET',
-                success: function(data) {
-                    $('#editCategoryId').val(data.id);
-                    $('#editName').val(data.name);
-                    $('#editDescription').val(data.description);
-                    $('#editImage').val(data.image);
-                    $('#editDisplayOrder').val(data.display_order);
-                    $('#editIsActive').val(data.is_active);
-                    $('#editCategoryModal').modal('show');
+            },
+            error: function(xhr) {
+                let errorMessage = 'Failed to update categories.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
                 }
-            });
-        });
-
-        // Handle edit form submission
-        $('#editCategoryForm').on('submit', function(e) {
-            e.preventDefault();
-            const categoryId = $('#editCategoryId').val();
-            $.ajax({
-                url: `/admin/categories/${categoryId}`,
-                type: 'PUT',
-                data: $(this).serialize(),
-                success: function(data) {
-                    $('#editCategoryModal').modal('hide');
-                    table.ajax.reload(); // Reload the DataTable
-                    Swal.fire({
-                        title: 'Success!',
-                        text: 'Category updated successfully.',
-                        icon: 'success',
-                        confirmButtonText: 'OK'
-                    });
-                },
-                error: function(xhr) {
-                    const response = xhr.responseJSON;
-                    Swal.fire({
-                        title: 'Error!',
-                        text: response.message,
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            });
-        });
-
-        // Handle delete button click
-        $(document).on('click', '.delete-category', function() {
-            console.log('Delete button clicked'); // Debug log
-            const categoryId = $(this).data('id');
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: `/admin/categories/${categoryId}`,
-                        type: 'DELETE',
-                        success: function(data) {
-                            table.ajax.reload(); // Reload the DataTable
-                            Swal.fire(
-                                'Deleted!',
-                                'Your category has been deleted.',
-                                'success'
-                            );
-                        },
-                        error: function(xhr) {
-                            const response = xhr.responseJSON;
-                            Swal.fire({
-                                title: 'Error!',
-                                text: response.message,
-                                icon: 'error',
-                                confirmButtonText: 'OK'
-                            });
-                        }
-                    });
-                }
-            });
+                showNotification('Error', errorMessage, 'error');
+            }
         });
     });
+    
+    // Handle bulk delete button
+    $('#bulkDeleteBtn').on('click', function() {
+        const selectedIds = $('.category-checkbox:checked').map(function() {
+            return $(this).val();
+        }).get();
+        
+        if (selectedIds.length === 0) {
+            showNotification('No categories selected', 'Please select categories to delete.', 'warning');
+            return;
+        }
+        
+        showConfirmation(
+            'Delete Categories?',
+            `Are you sure you want to delete ${selectedIds.length} selected categories? This action cannot be undone.`,
+            function() {
+                $.ajax({
+                    url: '{{ route("admin.categories.bulk-delete") }}',
+                    method: 'POST',
+                    data: { ids: selectedIds },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            showNotification('Success', response.message, 'success');
+                            table.ajax.reload();
+                            $('.category-checkbox').prop('checked', false);
+                            $('#selectAll').prop('checked', false);
+                            updateBulkButtons();
+                        }
+                    },
+                    error: function(xhr) {
+                        let errorMessage = 'Failed to delete categories.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        showNotification('Error', errorMessage, 'error');
+                    }
+                });
+            }
+        );
+    });
+    
+    // Handle delete button clicks
+    $(document).on('click', '.delete-btn', function() {
+        const id = $(this).data('id');
+        const name = $(this).data('name');
+        
+        showConfirmation(
+            'Delete Category?',
+            `Are you sure you want to delete "${name}"? This action cannot be undone.`,
+            function() {
+                $.ajax({
+                    url: `/admin/categories/${id}`,
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            showNotification('Success', response.message, 'success');
+                            table.ajax.reload();
+                        } else {
+                            showNotification('Error', response.message, 'error');
+                        }
+                    },
+                    error: function(xhr) {
+                        let errorMessage = 'An error occurred while deleting the category.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        showNotification('Error', errorMessage, 'error');
+                    }
+                });
+            }
+        );
+    });
+    
+    // Handle status toggle
+    $(document).on('click', '.status-toggle', function() {
+        const id = $(this).data('id');
+        const currentStatus = $(this).data('status');
+        const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+        
+        $.ajax({
+            url: `/admin/categories/${id}/toggle-status`,
+            method: 'PATCH',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: { status: newStatus },
+            success: function(response) {
+                if (response.success) {
+                    showNotification('Success', response.message, 'success');
+                    table.ajax.reload();
+                }
+            },
+            error: function(xhr) {
+                showNotification('Error', 'Failed to update status.', 'error');
+            }
+        });
+    });
+});
 </script>
 @endpush

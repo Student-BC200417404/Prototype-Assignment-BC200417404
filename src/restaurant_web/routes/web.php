@@ -13,8 +13,10 @@ use App\Http\Controllers\Admin\TableController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\ErrorLogController;
 use App\Http\Controllers\Admin\Auth\AdminAuthController;
 use App\Http\Controllers\ChatBotController;
+use App\Http\Controllers\Admin\SubCategoryController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -43,93 +45,102 @@ Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name(
 Route::get('/reset-password/{token}', [AuthController::class, 'showResetPassword'])->name('password.reset');
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
-// Admin Authentication Routes
+// Admin Authentication and Public Routes
 Route::prefix('admin')->group(function () {
     // Main admin route that checks authentication
     Route::get('/', [AdminController::class, 'index'])->name('admin.index');
-    
     // Admin authentication routes
     Route::get('/login', [AdminController::class, 'showLoginForm'])->name('admin.login');
     Route::post('/login', [AdminController::class, 'login'])->name('admin.login.submit');
-    Route::post('/logout', [AdminAuthController::class, 'logout'])
-        ->name('admin.logout')
-        ->middleware('auth');
-    
+    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout')->middleware('auth');
+    // Error logging route (no auth required for client-side errors)
+    Route::post('/log-error', [ErrorLogController::class, 'logClientError'])->name('admin.log-error');
+
     // Protected admin routes
-    Route::middleware(['auth'])->group(function () {
-        // Dashboard
+    Route::middleware(['auth', 'auth.admin'])->group(function () {
+        // Dashboard & Reports
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+        Route::get('/reports', [DashboardController::class, 'reports'])->name('admin.reports');
 
-        // Menu Management
-        Route::get('menu', [MenuController::class, 'index'])->name('admin.menu.index');
-        Route::get('menu/create', [MenuController::class, 'create'])->name('admin.menu.create');
-        Route::post('menu', [MenuController::class, 'store'])->name('admin.menu.store');
-        Route::get('menu/{id}/edit', [MenuController::class, 'edit'])->name('admin.menu.edit');
-        Route::put('menu/{id}', [MenuController::class, 'update'])->name('admin.menu.update');
-        Route::delete('menu/{id}', [MenuController::class, 'destroy'])->name('admin.menu.destroy');
-        Route::get('menu/data', [MenuController::class, 'getData'])->name('admin.menu.data');
+        // Categories CRUD & Custom Actions
+        Route::resource('categories', CategoryController::class, ['as' => 'admin']);
+        Route::get('categories/data/get', [CategoryController::class, 'getData'])->name('admin.categories.data');
+        Route::post('categories/bulk-delete', [CategoryController::class, 'bulkDelete'])->name('admin.categories.bulk-delete');
+        Route::post('categories/bulk-status', [CategoryController::class, 'bulkStatus'])->name('admin.categories.bulk-status');
+        Route::post('categories/check-name', [CategoryController::class, 'checkName'])->name('admin.categories.check-name');
+        Route::patch('categories/{id}/toggle-status', [CategoryController::class, 'toggleStatus'])->name('admin.categories.toggle-status');
 
-        // Categories
-        Route::get('/categories', [CategoryController::class, 'index'])->name('admin.categories.index');
-        Route::get('/categories/{id}/edit', [CategoryController::class, 'edit'])->name('admin.categories.edit');
-        Route::put('/categories/{id}', [CategoryController::class, 'update'])->name('admin.categories.update');
-        Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->name('admin.categories.destroy');
-        Route::get('/categories/data', [CategoryController::class, 'getData'])->name('admin.categories.data');
-        Route::get('/categories/create', [CategoryController::class, 'create'])->name('admin.categories.create');
-        Route::post('/categories', [CategoryController::class, 'store'])->name('admin.categories.store');
+        // Menu CRUD & Custom Actions
+        Route::resource('menu', MenuController::class, ['as' => 'admin']);
+        Route::get('menu/data/get', [MenuController::class, 'getData'])->name('admin.menu.data');
+        Route::post('menu/bulk-delete', [MenuController::class, 'bulkDelete'])->name('admin.menu.bulk-delete');
+        Route::post('menu/bulk-status', [MenuController::class, 'bulkStatus'])->name('admin.menu.bulk-status');
+        Route::patch('menu/{id}/toggle-status', [MenuController::class, 'toggleStatus'])->name('admin.menu.toggle-status');
 
-        // Orders
-        Route::prefix('orders')->group(function () {
-            Route::get('/', [OrderController::class, 'index'])->name('admin.orders.index');
-            Route::get('/pending', [OrderController::class, 'pending'])->name('admin.orders.pending');
-            Route::get('/completed', [OrderController::class, 'completed'])->name('admin.orders.completed');
-            Route::get('/{order}', [OrderController::class, 'show'])->name('admin.orders.show');
-            Route::patch('/{order}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.status.update');
-        });
+        // Orders CRUD & Custom Actions
+        Route::resource('orders', OrderController::class, ['as' => 'admin']);
+        Route::get('orders/data/get', [OrderController::class, 'getData'])->name('admin.orders.data');
+        Route::get('orders/pending', [OrderController::class, 'pending'])->name('admin.orders.pending');
+        Route::get('orders/completed', [OrderController::class, 'completed'])->name('admin.orders.completed');
+        Route::post('orders/bulk-delete', [OrderController::class, 'bulkDelete'])->name('admin.orders.bulk-delete');
+        Route::post('orders/bulk-status', [OrderController::class, 'bulkStatus'])->name('admin.orders.bulk-status');
+        Route::patch('orders/{id}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.status.update');
 
-        // Reservations
-        Route::prefix('reservations')->group(function () {
-            Route::get('/', [ReservationController::class, 'index'])->name('admin.reservations.index');
-            Route::get('/pending', [ReservationController::class, 'pending'])->name('admin.reservations.pending');
-            Route::get('/create', [ReservationController::class, 'create'])->name('admin.reservations.create');
-            Route::post('/', [ReservationController::class, 'store'])->name('admin.reservations.store');
-            Route::patch('/{reservation}/status', [ReservationController::class, 'updateStatus'])->name('admin.reservations.status.update');
-        });
+        // Reservations CRUD & Custom Actions
+        Route::resource('reservations', ReservationController::class, ['as' => 'admin']);
+        Route::get('reservations/data/get', [ReservationController::class, 'getData'])->name('admin.reservations.data');
+        Route::get('reservations/pending', [ReservationController::class, 'pending'])->name('admin.reservations.pending');
+        Route::get('reservations/completed', [ReservationController::class, 'completed'])->name('admin.reservations.completed');
+        Route::post('reservations/bulk-delete', [ReservationController::class, 'bulkDelete'])->name('admin.reservations.bulk-delete');
+        Route::post('reservations/bulk-status', [ReservationController::class, 'bulkStatus'])->name('admin.reservations.bulk-status');
+        Route::patch('reservations/{id}/status', [ReservationController::class, 'updateStatus'])->name('admin.reservations.status.update');
 
-        // Tables
-        Route::get('tables', [TableController::class, 'index'])->name('admin.tables.index');
-        Route::get('tables/create', [TableController::class, 'create'])->name('admin.tables.create');
-        Route::post('tables', [TableController::class, 'store'])->name('admin.tables.store');
-        Route::get('tables/{id}/edit', [TableController::class, 'edit'])->name('admin.tables.edit');
-        Route::put('tables/{id}', [TableController::class, 'update'])->name('admin.tables.update');
-        Route::delete('tables/{id}', [TableController::class, 'destroy'])->name('admin.tables.destroy');
+        // Tables CRUD & Custom Actions
+        Route::resource('tables', TableController::class, ['as' => 'admin']);
+        Route::get('tables/data/get', [TableController::class, 'getData'])->name('admin.tables.data');
+        Route::post('tables/bulk-delete', [TableController::class, 'bulkDelete'])->name('admin.tables.bulk-delete');
+        Route::post('tables/bulk-status', [TableController::class, 'bulkStatus'])->name('admin.tables.bulk-status');
+        Route::patch('tables/{id}/toggle-status', [TableController::class, 'toggleStatus'])->name('admin.tables.toggle-status');
 
-        // Customers
-        Route::get('customers', [CustomerController::class, 'index'])->name('admin.customers.index');
-        Route::get('customers/create', [CustomerController::class, 'create'])->name('admin.customers.create');
-        Route::post('customers', [CustomerController::class, 'store'])->name('admin.customers.store');
-        Route::get('customers/{id}/edit', [CustomerController::class, 'edit'])->name('admin.customers.edit');
-        Route::put('customers/{id}', [CustomerController::class, 'update'])->name('admin.customers.update');
-        Route::delete('customers/{id}', [CustomerController::class, 'destroy'])->name('admin.customers.destroy');
+        // Customers CRUD & Custom Actions
+        Route::resource('customers', CustomerController::class, ['as' => 'admin']);
+        Route::get('customers/data/get', [CustomerController::class, 'getData'])->name('admin.customers.data');
+        Route::post('customers/bulk-delete', [CustomerController::class, 'bulkDelete'])->name('admin.customers.bulk-delete');
+        Route::post('customers/bulk-status', [CustomerController::class, 'bulkStatus'])->name('admin.customers.bulk-status');
+        Route::patch('customers/{id}/toggle-status', [CustomerController::class, 'toggleStatus'])->name('admin.customers.toggle-status');
 
-        // Staff
-        Route::get('user', [UserController::class, 'index'])->name('admin.user.index');
-        Route::get('user/create', [UserController::class, 'create'])->name('admin.user.create');
-        Route::post('user', [UserController::class, 'store'])->name('admin.user.store');
-        Route::get('user/{id}/edit', [UserController::class, 'edit'])->name('admin.user.edit');
-        Route::put('user/{id}', [UserController::class, 'update'])->name('admin.user.update');
-        Route::delete('user/{id}', [UserController::class, 'destroy'])->name('admin.user.destroy');
+        // Users CRUD & Custom Actions
+        Route::resource('users', UserController::class, ['as' => 'admin']);
+        Route::get('users/data/get', [UserController::class, 'getData'])->name('admin.users.data');
+        Route::post('users/bulk-delete', [UserController::class, 'bulkDelete'])->name('admin.users.bulk-delete');
+        Route::post('users/bulk-status', [UserController::class, 'bulkStatus'])->name('admin.users.bulk-status');
+        Route::patch('users/{id}/toggle-status', [UserController::class, 'toggleStatus'])->name('admin.users.toggle-status');
+
+        // Error Logs
+        Route::get('error-logs', [ErrorLogController::class, 'index'])->name('admin.error-logs.index');
+        Route::get('error-logs/{id}', [ErrorLogController::class, 'show'])->name('admin.error-logs.show');
+        Route::post('error-logs/clear-old', [ErrorLogController::class, 'clearOld'])->name('admin.error-logs.clear-old');
+        Route::get('error-logs/export', [ErrorLogController::class, 'export'])->name('admin.error-logs.export');
 
         // Settings
-        Route::prefix('settings')->group(function () {
-            Route::get('/general', [SettingController::class, 'general'])->name('admin.settings.general');
-            Route::post('/general', [SettingController::class, 'updateGeneral']);
-            Route::get('/profile', [SettingController::class, 'profile'])->name('admin.profile');
-            Route::post('/profile', [SettingController::class, 'updateProfile']);
-        });
+        Route::get('settings', [SettingController::class, 'index'])->name('admin.settings.index');
+        Route::put('settings', [SettingController::class, 'update'])->name('admin.settings.update');
+        Route::post('settings/reset', [SettingController::class, 'reset'])->name('admin.settings.reset');
+        Route::get('settings/backup', [SettingController::class, 'backup'])->name('admin.settings.backup');
+        Route::post('settings/restore', [SettingController::class, 'restore'])->name('admin.settings.restore');
 
-        // Reports
-        Route::get('/reports', [DashboardController::class, 'reports'])->name('admin.reports');
+        // Test page for AJAX and SweetAlert demonstration
+        Route::get('/test', function () {
+            return view('admin.pages.test');
+        })->name('admin.test');
+
+        // SubCategories CRUD
+        Route::resource('subcategories', SubCategoryController::class, ['as' => 'admin']);
+        Route::get('subcategories/data/get', [SubCategoryController::class, 'getData'])->name('admin.subcategories.data');
+        Route::post('subcategories/bulk-delete', [SubCategoryController::class, 'bulkDelete'])->name('admin.subcategories.bulk-delete');
+        Route::post('subcategories/bulk-status', [SubCategoryController::class, 'bulkStatus'])->name('admin.subcategories.bulk-status');
+        Route::patch('subcategories/{id}/toggle-status', [SubCategoryController::class, 'toggleStatus'])->name('admin.subcategories.toggle-status');
+        Route::post('subcategories/check-name', [SubCategoryController::class, 'checkName'])->name('admin.subcategories.check-name');
     });
 });
 

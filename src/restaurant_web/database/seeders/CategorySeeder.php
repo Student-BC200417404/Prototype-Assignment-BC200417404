@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use App\Models\Category;
 
 class CategorySeeder extends Seeder
 {
@@ -14,119 +15,61 @@ class CategorySeeder extends Seeder
         $mainCategories = [
             [
                 'name' => 'Appetizers',
-                'subcategories' => [
-                    'Soups',
-                    'Salads',
-                    'Small Plates',
-                    'Bruschetta',
-                    'Spring Rolls',
-                ]
+                'snonym' => 'Start your meal with our delicious appetizers',
+                'display_order' => 1,
             ],
             [
                 'name' => 'Main Courses',
-                'subcategories' => [
-                    'Steaks',
-                    'Seafood',
-                    'Pasta',
-                    'Chicken Dishes',
-                    'Vegetarian Mains',
-                ]
+                'snonym' => 'Our signature main dishes prepared with fresh ingredients',
+                'display_order' => 2,
             ],
             [
                 'name' => 'Burgers & Sandwiches',
-                'subcategories' => [
-                    'Classic Burgers',
-                    'Specialty Burgers',
-                    'Chicken Sandwiches',
-                    'Vegetarian Burgers',
-                    'Club Sandwiches',
-                ]
+                'snonym' => 'Juicy burgers and fresh sandwiches for a satisfying meal',
+                'display_order' => 3,
             ],
             [
                 'name' => 'Pizza',
-                'subcategories' => [
-                    'Classic Pizzas',
-                    'Specialty Pizzas',
-                    'Vegetarian Pizzas',
-                    'Calzones',
-                ]
+                'snonym' => 'Authentic pizzas with premium toppings and fresh dough',
+                'display_order' => 4,
             ],
             [
                 'name' => 'Asian Cuisine',
-                'subcategories' => [
-                    'Sushi Rolls',
-                    'Noodle Dishes',
-                    'Stir-Fry',
-                    'Curry Dishes',
-                    'Rice Bowls',
-                ]
+                'snonym' => 'Traditional Asian flavors with a modern twist',
+                'display_order' => 5,
             ],
             [
                 'name' => 'Sides',
-                'subcategories' => [
-                    'French Fries',
-                    'Onion Rings',
-                    'Coleslaw',
-                    'Mashed Potatoes',
-                    'Grilled Vegetables',
-                ]
+                'snonym' => 'Perfect accompaniments to complement your main dish',
+                'display_order' => 6,
             ],
             [
                 'name' => 'Desserts',
-                'subcategories' => [
-                    'Cakes',
-                    'Ice Cream',
-                    'Pies',
-                    'Puddings',
-                    'Cookies & Brownies',
-                ]
+                'snonym' => 'Sweet endings to your dining experience',
+                'display_order' => 7,
             ],
             [
                 'name' => 'Beverages',
-                'subcategories' => [
-                    'Soft Drinks',
-                    'Hot Drinks',
-                    'Smoothies',
-                    'Fresh Juices',
-                    'Mocktails',
-                ]
+                'snonym' => 'Refreshing drinks to quench your thirst',
+                'display_order' => 8,
             ],
             [
                 'name' => 'Special Menus',
-                'subcategories' => [
-                    'Kids Menu',
-                    'Lunch Specials',
-                    'Chef\'s Specials',
-                    'Weekend Brunch',
-                    'Holiday Specials',
-                ]
+                'snonym' => 'Exclusive menus for special occasions and dietary needs',
+                'display_order' => 9,
             ],
         ];
 
-        foreach ($mainCategories as $index => $category) {
-            // Insert main category
-            $mainCategoryId = DB::table('categories')->insertGetId([
-                'name' => $category['name'],
-                'slug' => Str::slug($category['name']),
-                'parent_id' => null,
-                'display_order' => $index,
-                'is_active' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            // Insert subcategories
-            foreach ($category['subcategories'] as $subIndex => $subcategory) {
-                DB::table('categories')->insert([
-                    'name' => $subcategory,
-                    'slug' => Str::slug($subcategory),
-                    'parent_id' => $mainCategoryId,
-                    'display_order' => $subIndex,
+        foreach ($mainCategories as $category) {
+            Category::firstOrCreate(
+                ['name' => $category['name']],
+                [
+                    'snonym' => $category['snonym'],
+                    'slug' => Str::slug($category['name']),
+                    'display_order' => $category['display_order'],
                     'is_active' => true,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
+                ]
+            );
         }
     }
 } 

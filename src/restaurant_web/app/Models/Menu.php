@@ -19,6 +19,7 @@ class Menu extends Model
     protected $fillable = [
         'category_id',
         'name',
+        'snonym',
         'slug',
         'description',
         'price',
@@ -37,7 +38,15 @@ class Menu extends Model
      *
      * @var array<string, string>
      */
-
+    protected $casts = [
+        'price' => 'decimal:2',
+        'discount_price' => 'decimal:2',
+        'is_vegetarian' => 'boolean',
+        'is_spicy' => 'boolean',
+        'is_available' => 'boolean',
+        'ingredients' => 'array',
+        'nutritional_info' => 'array',
+    ];
 
     /**
      * Get the category that owns the menu item.
@@ -45,6 +54,14 @@ class Menu extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Get the order details for this menu item.
+     */
+    public function orderDetails()
+    {
+        return $this->hasMany(OrderDetail::class);
     }
 
     /**

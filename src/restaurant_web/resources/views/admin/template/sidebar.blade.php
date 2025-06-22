@@ -38,6 +38,25 @@
 
       <li class="dropdown">
         <a href="javascript:void(0)">
+          <iconify-icon icon="solar:layers-outline" class="menu-icon"></iconify-icon>
+          <span>SubCategories</span> 
+        </a>
+        <ul class="sidebar-submenu">
+          <li>
+            <a href="{{ route('admin.subcategories.index') }}">
+              <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> All SubCategories
+            </a>
+          </li>
+          <li>
+            <a href="{{ route('admin.subcategories.create') }}">
+              <i class="ri-circle-fill circle-icon text-success-main w-auto"></i> Add SubCategory
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <li class="dropdown">
+        <a href="javascript:void(0)">
           <iconify-icon icon="fluent:food-24-regular" class="menu-icon"></iconify-icon>
           <span>Menu Items</span> 
         </a>
@@ -154,12 +173,12 @@
         </a>
         <ul class="sidebar-submenu">
           <li>
-            <a href="{{ route('admin.user.index') }}">
+            <a href="{{ route('admin.users.index') }}">
               <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> All User
             </a>
           </li>
           <li>
-            <a href="{{ route('admin.user.create') }}">
+            <a href="{{ route('admin.users.create') }}">
               <i class="ri-circle-fill circle-icon text-success-main w-auto"></i> Add User
             </a>
           </li>
@@ -169,23 +188,35 @@
       <li class="sidebar-menu-group-title">Settings</li>
 
       <li>
-        <a href="{{ route('admin.settings.general') }}">
+        <a href="{{ route('admin.settings.index') }}">
           <iconify-icon icon="solar:settings-outline" class="menu-icon"></iconify-icon>
           <span>General Settings</span> 
         </a>
       </li>
 
-      <li>
-        <a href="{{ route('admin.profile') }}">
-          <iconify-icon icon="solar:user-outline" class="menu-icon"></iconify-icon>
-          <span>My Profile</span> 
-        </a>
-      </li>
+      {{-- <a href="{{ route('admin.profile') }}">
+        <iconify-icon icon="solar:user-linear" class="menu-icon"></iconify-icon>
+        <span>My Profile</span>
+      </a> --}}
 
       <li>
         <a href="{{ route('admin.reports') }}">
           <iconify-icon icon="solar:chart-2-outline" class="menu-icon"></iconify-icon>
           <span>Reports</span> 
+        </a>
+      </li>
+
+      <li class="sidebar-menu-group-title">Logs & Utilities</li>
+      <li>
+        <a href="{{ route('admin.error-logs.index') }}">
+          <iconify-icon icon="solar:danger-triangle-outline" class="menu-icon"></iconify-icon>
+          <span>Error Logs</span>
+        </a>
+      </li>
+      <li>
+        <a href="{{ route('admin.test') }}">
+          <iconify-icon icon="solar:flask-outline" class="menu-icon"></iconify-icon>
+          <span>Test/Demo Page</span>
         </a>
       </li>
     </ul>

@@ -12,13 +12,22 @@ class CategoryFactory extends Factory
     public function definition()
     {
         return [
-            'parent_id' => null, // or you can use $this->faker->randomElement([null, 1, 2]) for random parent IDs
-            'name' => $this->faker->unique()->word,
-            'slug' => $this->faker->unique()->slug,
-            'description' => $this->faker->sentence,
-            'image' => $this->faker->imageUrl(),
+            'name' => $this->faker->unique()->words(2, true),
+            'snonym' => $this->faker->optional()->sentence(),
+            'slug' => $this->faker->unique()->slug(),
+            'image' => $this->faker->optional()->imageUrl(640, 480, 'food'),
             'display_order' => $this->faker->numberBetween(1, 100),
-            'is_active' => $this->faker->boolean,
+            'is_active' => $this->faker->boolean(80), // 80% chance of being active
         ];
+    }
+
+    /**
+     * Indicate that the category is inactive.
+     */
+    public function inactive(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_active' => false,
+        ]);
     }
 } 

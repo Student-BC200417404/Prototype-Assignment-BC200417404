@@ -26,4 +26,17 @@ class ErrorLog extends Model
         'request_method',  // GET, POST, etc.
         'is_resolved',
     ];
+
+    protected $casts = [
+        'additional_data' => 'array',
+        'is_resolved' => 'boolean',
+    ];
+
+    /**
+     * Get the user that owns the error log.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

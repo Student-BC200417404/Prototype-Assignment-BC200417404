@@ -33,6 +33,7 @@ Route::get('/', [WebController::class, 'index'])->name('home');
 Route::get('/about', [WebController::class, 'about'])->name('about');
 Route::get('/menu', [WebController::class, 'menu'])->name('menu');
 Route::get('/contact', [WebController::class, 'contact'])->name('contact');
+Route::post('/contact', [WebController::class, 'handleContactForm'])->name('contact.submit');
 Route::get('/login', [AuthController::class, 'showUserLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'userLogin'])->name('login.submit');
 

@@ -5769,3 +5769,207 @@ header.main-header .header-sticky.active{
 		height: 350px;
 	}
 }
+
+/*================================================================================================
+  [ End Activation Area ]
+================================================================================================*/
+
+/* =================================================================== */
+/*                     CLASSIC MENU PAGE UI                            */
+/* =================================================================== */
+
+.classic-menu-section {
+    background-color: var(--secondary-color); /* Use default dark background */
+}
+
+.menu-category-block {
+    margin-bottom: 50px;
+}
+
+.classic-menu-category-title {
+    text-align: center;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.classic-menu-category-title::before,
+.classic-menu-category-title::after {
+    content: '';
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    background-color: var(--primary-color); /* Use theme accent color */
+    margin: 0 15px;
+}
+
+.classic-menu-category-title h2 {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 1.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-color); /* Use theme heading color */
+    margin: 0;
+}
+
+.classic-menu-item {
+    margin-bottom: 25px;
+}
+
+.classic-menu-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 5px;
+}
+
+.classic-menu-item-header h3 {
+    font-size: 1.1rem;
+    color: var(--text-color); /* Use theme heading color */
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.classic-menu-item-header .price {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary-color); /* Use theme accent color */
+}
+
+.classic-menu-item p.description {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    margin: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+    .classic-menu-section {
+        padding: 60px 0;
+    }
+    .classic-menu-category-title h2 {
+        font-size: 1.2rem;
+    }
+}
+
+/* =================================================================== */
+/*                     CLASSIC MENU CARD STYLE                         */
+/* =================================================================== */
+
+.classic-menu-card {
+    display: flex;
+    align-items: flex-start;
+    background: var(--secondary-color);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 20px;
+    margin-bottom: 25px;
+    border: 1px solid var(--divider-color);
+}
+.classic-menu-card-img {
+    flex: 0 0 80px;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 20px;
+    background: var(--dark-divider-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.classic-menu-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+.classic-menu-card-content {
+    flex: 1;
+}
+.classic-menu-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    border-bottom: 1px dotted var(--divider-color);
+    padding-bottom: 4px;
+}
+.classic-menu-card-header h3 {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+}
+.classic-menu-card-header .price {
+    background: var(--accent-color);
+    color: var(--secondary-color);
+    font-weight: 700;
+    border-radius: 20px;
+    padding: 4px 18px;
+    font-size: 1.1rem;
+    margin-left: 10px;
+}
+.classic-menu-card .description {
+    color: var(--text-color);
+    font-size: 0.98rem;
+    margin: 0;
+}
+@media (max-width: 767.98px) {
+    .classic-menu-card {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 14px;
+    }
+    .classic-menu-card-img {
+        margin: 0 auto 12px auto;
+    }
+    .classic-menu-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+    .classic-menu-card-header .price {
+        margin-left: 0;
+    }
+}
+
+/* Remove squares from category title */
+.classic-menu-category-title::before,
+.classic-menu-category-title::after {
+    display: none !important;
+}
+
+.classic-menu-category-card {
+    background: var(--secondary-color);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 32px 28px 18px 28px;
+    margin-bottom: 40px;
+    border: 1px solid var(--divider-color);
+    transition: box-shadow 0.25s, transform 0.25s;
+}
+.classic-menu-category-card:hover {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18), 0 1.5px 8px rgba(223,155,86,0.10);
+    transform: translateY(-4px) scale(1.015);
+    z-index: 2;
+}
+
+.classic-menu-category-title {
+    text-align: center;
+    margin-bottom: 30px;
+    display: block;
+}
+
+.classic-menu-category-title h2 {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-color);
+    margin: 0;
+    font-weight: 700;
+}

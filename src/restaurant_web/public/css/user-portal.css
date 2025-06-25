@@ -1,0 +1,38 @@
+.portal-wrapper.is-sidebar-open .portal-sidebar-overlay {
+    display: block;
+}
+
+/* ======================================================================== */
+/*        C O N T E N T   R E S P O N S I V E N E S S               */
+/* ======================================================================== */
+
+@media (max-width: 767.98px) {
+    .portal-main-title {
+        font-size: 1.75rem; /* Slightly smaller title on mobile */
+    }
+
+    .portal-main-lead {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-card .stat-number {
+        font-size: 1.75rem; /* Smaller stat numbers on mobile */
+    }
+
+    .card .card-body, .card .p-4 {
+        padding: 1.25rem; /* Reduce card padding on mobile */
+    }
+}
+
+@media (max-width: 575.98px) {
+    /* Make form buttons full-width on extra-small screens for easier tapping */
+    .d-flex.justify-content-end .btn-portal-primary {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .d-flex.justify-content-end {
+        justify-content: stretch !important;
+    }
+} 

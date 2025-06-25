@@ -1,67 +1,54 @@
 @extends('layouts.user')
 @section('title', 'My Reservations')
-@push('styles')
-<style>
-.user-portal-bg { background: #f7f8fa; min-height: 100vh; }
-.user-main-card { background: #fff; border-radius: 18px; box-shadow: 0 2px 16px rgba(0,0,0,0.08); padding: 2rem 2rem 1.5rem 2rem; margin-top: 2.5rem; }
-@media (max-width: 991px) { .user-main-card { padding: 1rem; margin-top: 1rem; } }
-</style>
-@endpush
+
 @section('content')
-<div class="container-fluid user-portal-bg py-0 px-0">
-    <div class="container py-5">
-        <div class="row gx-5">
-            <!-- Sidebar -->
-            <div class="col-md-3 mb-4 mb-md-0">
-                @include('pages.user.sidebar')
-            </div>
-            <!-- Main Content -->
-            <div class="col-md-9">
-                <div class="user-main-card">
-                    @if(session('success'))
-                        <div class="alert alert-success">{{ session('success') }}</div>
-                    @endif
-                    @if(session('error'))
-                        <div class="alert alert-danger">{{ session('error') }}</div>
-                    @endif
-                    <div class="card">
-                        <div class="card-header">My Reservations</div>
-                        <div class="card-body table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Reservation ID</th>
-                                        <th>Date</th>
-                                        <th>Time</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>#R-2001</td>
-                                        <td>2024-06-01</td>
-                                        <td>7:00 PM</td>
-                                        <td><span class="badge bg-success">Confirmed</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>#R-2002</td>
-                                        <td>2024-05-30</td>
-                                        <td>8:30 PM</td>
-                                        <td><span class="badge bg-warning">Pending</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>#R-2003</td>
-                                        <td>2024-05-28</td>
-                                        <td>6:00 PM</td>
-                                        <td><span class="badge bg-danger">Cancelled</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<h1 class="portal-main-title">My Reservations</h1>
+<p class="portal-main-lead">
+    Manage your upcoming and past table reservations.
+</p>
+
+<div class="card">
+    <div class="card-header">
+        Reservation History
+    </div>
+    <div class="card-body">
+        @if($reservations->isEmpty())
+        <div class="text-center p-4">
+            <p>You haven't made any reservations yet.</p>
+            <a href="#" class="btn btn-portal-primary mt-2">Make a Reservation</a>
         </div>
+        @else
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>Reservation ID</th>
+                        <th>Date & Time</th>
+                        <th>Guests</th>
+                        <th>Status</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($reservations as $reservation)
+                    <tr>
+                        <td>#{{ $reservation->id }}</td>
+                        <td>{{ $reservation->reservation_time->format('M d, Y @ h:i A') }}</td>
+                        <td>{{ $reservation->number_of_people }}</td>
+                        <td><span class="badge bg-{{ strtolower($reservation->status) == 'confirmed' ? 'success' : 'info' }}">{{ $reservation->status }}</span></td>
+                        <td class="text-center">
+                            <a href="#" class="btn-portal-link">View Details</a>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-4">
+            {{ $reservations->links() }}
+        </div>
+        @endif
     </div>
 </div>
 @endsection 

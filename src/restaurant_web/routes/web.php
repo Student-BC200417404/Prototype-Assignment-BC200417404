@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\ErrorLogController;
 use App\Http\Controllers\Admin\Auth\AdminAuthController;
 use App\Http\Controllers\ChatBotController;
 use App\Http\Controllers\Admin\SubCategoryController;
+use App\Http\Controllers\UserDashboardController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -160,25 +161,16 @@ Route::get('/clear-cache', function () {
 });
 
 // User Portal Routes
-Route::middleware(['auth'])->prefix('user')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('pages.user.dashboard');
-    })->name('user.dashboard');
-
-    Route::get('/profile', function () {
-        return view('pages.user.profile');
-    })->name('user.profile');
-
-    Route::get('/orders', function () {
-        return view('pages.user.orders');
-    })->name('user.orders');
-
-    Route::get('/reservations', function () {
-        return view('pages.user.reservations');
-    })->name('user.reservations');
-
-    Route::get('/change-password', function () {
-        return view('pages.user.change-password');
-    })->name('user.change-password');
+Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
+    Route::get('/dashboard', [UserDashboardController::class, 'dashboard'])->name('dashboard');
+    
+    Route::get('/profile', [UserDashboardController::class, 'profile'])->name('profile');
+    Route::patch('/profile', [UserDashboardController::class, 'updateProfile'])->name('profile.update');
+    
+    Route::get('/orders', [UserDashboardController::class, 'orders'])->name('orders');
+    Route::get('/reservations', [UserDashboardController::class, 'reservations'])->name('reservations');
+    
+    Route::get('/change-password', [UserDashboardController::class, 'changePassword'])->name('change-password');
+    Route::put('/change-password', [UserDashboardController::class, 'updatePassword'])->name('password.update');
 });
 

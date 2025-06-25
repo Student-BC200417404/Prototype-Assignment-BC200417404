@@ -1,54 +1,52 @@
 @extends('layouts.user')
+
 @section('title', 'My Profile')
-@push('styles')
-<style>
-.user-portal-bg { background: #f7f8fa; min-height: 100vh; }
-.user-main-card { background: #fff; border-radius: 18px; box-shadow: 0 2px 16px rgba(0,0,0,0.08); padding: 2rem 2rem 1.5rem 2rem; margin-top: 2.5rem; }
-@media (max-width: 991px) { .user-main-card { padding: 1rem; margin-top: 1rem; } }
-</style>
-@endpush
+
 @section('content')
-<div class="container-fluid user-portal-bg py-0 px-0">
-    <div class="container py-5">
-        <div class="row gx-5">
-            <!-- Sidebar -->
-            <div class="col-md-3 mb-4 mb-md-0">
-                @include('pages.user.sidebar')
-            </div>
-            <!-- Main Content -->
-            <div class="col-md-9">
-                <div class="user-main-card">
-                    @if(session('success'))
-                        <div class="alert alert-success">{{ session('success') }}</div>
-                    @endif
-                    @if(session('error'))
-                        <div class="alert alert-danger">{{ session('error') }}</div>
-                    @endif
-                    <div class="card">
-                        <div class="card-header">My Profile</div>
-                        <div class="card-body">
-                            <form method="POST" action="#">
-                                @csrf
-                                <div class="mb-3">
-                                    <label for="name" class="form-label">Name</label>
-                                    <input type="text" class="form-control" id="name" name="name" value="John Doe">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="email" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="email" name="email" value="john@example.com">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="phone" class="form-label">Phone</label>
-                                    <input type="text" class="form-control" id="phone" name="phone" value="+1 234 567 8900">
-                                </div>
-                                <button type="submit" class="btn btn-primary">Update Profile</button>
-                                <a href="{{ route('user.change-password') }}" class="btn btn-link">Change Password</a>
-                            </form>
-                        </div>
-                    </div>
+<h1 class="portal-main-title">My Profile</h1>
+<p class="portal-main-lead">
+    Manage your personal information and contact details.
+</p>
+
+<div class="card">
+    <div class="card-header">
+        Edit Profile Information
+    </div>
+    <div class="card-body p-4">
+        <form action="{{ route('user.profile.update') }}" method="POST">
+            @csrf
+            @method('PATCH')
+
+            <div class="row g-3">
+                {{-- Name --}}
+                <div class="col-md-6">
+                    <label for="name" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="name" name="name" value="{{ old('name', $user->name) }}" required>
+                </div>
+
+                {{-- Email --}}
+                <div class="col-md-6">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" class="form-control" id="email" name="email" value="{{ old('email', $user->email) }}" required>
+                </div>
+
+                {{-- Phone --}}
+                <div class="col-12">
+                    <label for="phone" class="form-label">Phone Number</label>
+                    <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone', $user->phone) }}">
+                </div>
+
+                {{-- Address --}}
+                <div class="col-12">
+                    <label for="address" class="form-label">Address</label>
+                    <textarea class="form-control" id="address" name="address" rows="3">{{ old('address', $user->address) }}</textarea>
                 </div>
             </div>
-        </div>
+
+            <div class="d-flex justify-content-end mt-4">
+                <button type="submit" class="btn btn-portal-primary">Save Changes</button>
+            </div>
+        </form>
     </div>
 </div>
 @endsection 

@@ -1,67 +1,54 @@
 @extends('layouts.user')
 @section('title', 'My Orders')
-@push('styles')
-<style>
-.user-portal-bg { background: #f7f8fa; min-height: 100vh; }
-.user-main-card { background: #fff; border-radius: 18px; box-shadow: 0 2px 16px rgba(0,0,0,0.08); padding: 2rem 2rem 1.5rem 2rem; margin-top: 2.5rem; }
-@media (max-width: 991px) { .user-main-card { padding: 1rem; margin-top: 1rem; } }
-</style>
-@endpush
+
 @section('content')
-<div class="container-fluid user-portal-bg py-0 px-0">
-    <div class="container py-5">
-        <div class="row gx-5">
-            <!-- Sidebar -->
-            <div class="col-md-3 mb-4 mb-md-0">
-                @include('pages.user.sidebar')
+<h1 class="portal-main-title">My Orders</h1>
+<p class="portal-main-lead">
+    Review your order history and check the status of current orders.
+</p>
+
+<div class="card">
+    <div class="card-header">
+        Order History
+    </div>
+    <div class="card-body">
+        @if($orders->isEmpty())
+            <div class="text-center p-4">
+                <p>You haven't placed any orders yet.</p>
+                <a href="#" class="btn btn-portal-primary mt-2">Order Now</a>
             </div>
-            <!-- Main Content -->
-            <div class="col-md-9">
-                <div class="user-main-card">
-                    @if(session('success'))
-                        <div class="alert alert-success">{{ session('success') }}</div>
-                    @endif
-                    @if(session('error'))
-                        <div class="alert alert-danger">{{ session('error') }}</div>
-                    @endif
-                    <div class="card">
-                        <div class="card-header">My Orders</div>
-                        <div class="card-body table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Order ID</th>
-                                        <th>Date</th>
-                                        <th>Status</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>#1001</td>
-                                        <td>2024-06-01</td>
-                                        <td><span class="badge bg-success">Completed</span></td>
-                                        <td>$120.00</td>
-                                    </tr>
-                                    <tr>
-                                        <td>#1002</td>
-                                        <td>2024-05-30</td>
-                                        <td><span class="badge bg-warning">Pending</span></td>
-                                        <td>$85.50</td>
-                                    </tr>
-                                    <tr>
-                                        <td>#1003</td>
-                                        <td>2024-05-28</td>
-                                        <td><span class="badge bg-danger">Cancelled</span></td>
-                                        <td>$45.00</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+        @else
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th class="text-end">Total</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($orders as $order)
+                        <tr>
+                            <td>#{{ $order->id }}</td>
+                            <td>{{ $order->created_at->format('M d, Y') }}</td>
+                            <td><span class="badge bg-{{ strtolower($order->status) == 'completed' ? 'success' : 'warning' }}">{{ $order->status }}</span></td>
+                            <td class="text-end">${{ number_format($order->total, 2) }}</td>
+                            <td class="text-center">
+                                <a href="#" class="btn-portal-link">View Details</a>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
-        </div>
+            
+            <div class="mt-4">
+                {{ $orders->links() }}
+            </div>
+        @endif
     </div>
 </div>
 @endsection 

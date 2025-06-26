@@ -719,7 +719,7 @@
                 <div class="col-lg-6">
                     <!-- Reserve Table Form Start -->
                     <div class="reserve-table-form">
-                        <form id="appointmentForm" action="" method="POST" data-toggle="validator" class="wow fadeInUp">
+                        <form id="appointmentForm" action="{{ route('reserve.table') }}" method="POST" data-toggle="validator" class="wow fadeInUp">
                             @csrf
                             <div class="row">
                                 <div class="form-group col-md-12 mb-4">

@@ -175,3 +175,5 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::put('/change-password', [UserDashboardController::class, 'updatePassword'])->name('password.update');
 });
 
+Route::post('/reserve-table', [WebController::class, 'handleReservationForm'])->name('reserve.table');
+

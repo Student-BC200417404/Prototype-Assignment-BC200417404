@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use App\Models\Menu;
 use App\Models\Category;
+use App\Models\Order;
 
 class ChatBotController extends Controller
 {
@@ -273,12 +274,34 @@ class ChatBotController extends Controller
     private function handleOrderAdd(Request $request, $sessionId)
     {
         $params = $request->input('queryResult.parameters', []);
-        $item = $params['item'] ?? null;
+        $items = $params['item'] ?? null;
+        $numbers = $params['number'] ?? [];
         $order = Cache::get('chatbot_' . $sessionId . '_order', []);
-        if ($item) {
-            $order[] = $item;
+
+        if ($items) {
+            // Normalize to arrays
+            if (!is_array($items)) {
+                $items = [$items];
+            }
+            if (!is_array($numbers)) {
+                $numbers = [$numbers];
+            }
+
+            $addedItems = [];
+            foreach ($items as $idx => $item) {
+                $qty = isset($numbers[$idx]) ? (int)$numbers[$idx] : 1;
+                // Add or update quantity in order
+                if (isset($order[$item])) {
+                    $order[$item] += $qty;
+                } else {
+                    $order[$item] = $qty;
+                }
+                $addedItems[] = "$qty x $item";
+            }
+
             Cache::put('chatbot_' . $sessionId . '_order', $order, 60);
-            $msg = "✅ I've added *$item* to your order.\n\nWould you like to add more items or proceed to checkout?";
+
+            $msg = "✅ I've added: " . implode(', ', $addedItems) . " to your order.\n\nWould you like to add more items or proceed to checkout?";
         } else {
             $msg = "Please specify what you want to add to your order.";
         }
@@ -331,7 +354,30 @@ class ChatBotController extends Controller
 
     private function handleTrackOrder(Request $request, $sessionId)
     {
-        $msg = "🚚 Your order is currently being prepared and will be on its way soon!\n\nWould you like to track anything else?";
+        // Get tracking id (order_number) from parameters if provided
+        $params = $request->input('queryResult.parameters', []);
+        $trackingId = $params['tracking_id'] ?? null;
+
+        if (!$trackingId) {
+            return response()->json(['fulfillmentText' => "Please provide your tracking ID (order number) to track your order."]);
+        }
+
+        $order = Order::where('order_number', $trackingId)->first();
+        if (!$order) {
+            return response()->json(['fulfillmentText' => "No order found with tracking ID $trackingId. Please check your tracking ID or try again."]);
+        }
+
+        $statusMap = [
+            'pending' => '🕒 Your order is pending and will be processed soon.',
+            'preparing' => '👨‍🍳 Your order is being prepared.',
+            'ready' => '✅ Your order is ready for pickup or delivery.',
+            'delivered' => '🚚 Your order has been delivered.',
+            'completed' => '🎉 Your order is completed. Enjoy your meal!',
+            'cancelled' => '❌ Your order was cancelled.'
+        ];
+        $statusMsg = $statusMap[$order->status] ?? 'Your order status: ' . ucfirst($order->status);
+
+        $msg = "Order Tracking\nOrder Number: {$order->order_number}\nStatus: {$order->status}\n\n$statusMsg\n\nIs there anything else I can help you with?";
         return response()->json(['fulfillmentText' => $msg]);
     }
 

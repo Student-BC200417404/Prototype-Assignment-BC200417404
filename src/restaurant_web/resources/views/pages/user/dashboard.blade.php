@@ -5,7 +5,11 @@
 @section('content')
 <h1 class="portal-main-title">Dashboard</h1>
 <p class="portal-main-lead">
-    Welcome back, {{ Auth::user()->name }}! Here's a summary of your account activity.
+    @if($customer)
+        Welcome back, {{ $customer->full_name }}@if($customer->phone) ({{ $customer->phone }})@endif! Here's a summary of your account activity.
+    @else
+        Welcome back, {{ $user->name }}! Here's a summary of your account activity.
+    @endif
 </p>
 
 {{-- Stat Cards --}}

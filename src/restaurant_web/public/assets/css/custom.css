@@ -5973,3 +5973,114 @@ header.main-header .header-sticky.active{
     margin: 0;
     font-weight: 700;
 }
+
+/* --- Auth Card Custom Styles --- */
+.auth-bg {
+    background: #181818;
+    min-height: 100vh;
+}
+.auth-card {
+    background: #23272f;
+    border-radius: 1.5rem;
+    box-shadow: 0 8px 32px rgba(60, 60, 120, 0.12), 0 1.5px 8px rgba(223,155,86,0.10);
+    padding: 2.5rem 2rem 2rem 2rem;
+    max-width: 370px;
+    width: 100%;
+    margin: 2rem 0;
+    position: relative;
+    z-index: 2;
+}
+.auth-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+.auth-tab {
+    flex: 1 1 0;
+    text-align: center;
+    padding: 0.7rem 0;
+    font-weight: 600;
+    font-size: 1.1rem;
+    border: none;
+    background: #23272f;
+    color: #ffc107;
+    border-radius: 1.2rem 1.2rem 0 0;
+    transition: background 0.2s, color 0.2s;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: none;
+}
+.auth-tab.active, .auth-tab:hover {
+    background: #ffc107;
+    color: #23272f;
+    box-shadow: 0 2px 8px rgba(255,193,7,0.08);
+}
+.auth-title {
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #fff;
+    margin-bottom: 1.5rem;
+}
+.input-group-text {
+    background: #181818;
+    border: none;
+    color: #ffc107;
+    font-size: 1.2rem;
+    border-radius: 1rem 0 0 1rem;
+}
+.form-control {
+    background: #181818;
+    border: none;
+    border-radius: 0 1rem 1rem 0;
+    font-size: 1rem;
+    color: #fff;
+    box-shadow: none;
+}
+.form-control:focus {
+    background: #23272f;
+    border: none;
+    outline: none;
+    box-shadow: 0 0 0 2px #ffc10744;
+    color: #fff;
+}
+.btn-auth {
+    background: linear-gradient(90deg, #ffc107 0%, #ffecb3 100%);
+    color: #232323;
+    font-weight: 700;
+    border: none;
+    border-radius: 1.2rem;
+    padding: 0.8rem 0;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 8px rgba(255,193,7,0.08);
+    transition: background 0.2s, box-shadow 0.2s;
+}
+.btn-auth:hover, .btn-auth:focus {
+    background: linear-gradient(90deg, #ffb300 0%, #ffc107 100%);
+    color: #232323;
+    box-shadow: 0 4px 16px rgba(255,193,7,0.16);
+}
+.auth-link {
+    color: #ffc107;
+    text-decoration: underline;
+    font-weight: 500;
+    font-size: 0.98rem;
+}
+.auth-link:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+.alert {
+    border-radius: 0.8rem;
+    font-size: 0.98rem;
+}
+@media (max-width: 480px) {
+    .auth-card {
+        padding: 1.2rem 0.5rem 1.5rem 0.5rem;
+        max-width: 98vw;
+    }
+    .auth-title {
+        font-size: 1.1rem;
+    }
+}

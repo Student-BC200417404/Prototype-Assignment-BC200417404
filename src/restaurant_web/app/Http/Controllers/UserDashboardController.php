@@ -15,23 +15,32 @@ class UserDashboardController extends Controller
     public function dashboard()
     {
         $user = Auth::user();
-
-        // KPIs for the stat cards
-        $kpis = [
-            'total_orders' => Order::where('customer_id', $user->id)->count(),
-            'total_spent' => Order::where('customer_id', $user->id)->where('status', 'Completed')->sum('total'),
-            'total_reservations' => Reservation::where('customer_id', $user->id)->count(),
-        ];
-
-        // Data for the recent activity tables
-        $recent_orders = Order::where('customer_id', $user->id)->latest()->take(5)->get();
+        $customer = $user->customer;
         
-        $recent_reservations = Reservation::where('customer_id', $user->id)
-            ->latest('reservation_time')
-            ->take(5)
-            ->get();
-
-        return view('pages.user.dashboard', compact('user', 'kpis', 'recent_orders', 'recent_reservations'));
+        // If no customer profile, show empty dashboard
+        if (!$customer) {
+            $kpis = [
+                'total_orders' => 0,
+                'total_spent' => 0,
+                'total_reservations' => 0,
+            ];
+            $recent_orders = collect();
+            $recent_reservations = collect();
+        } else {
+            // KPIs for the stat cards
+            $kpis = [
+                'total_orders' => Order::where('customer_id', $customer->id)->count(),
+                'total_spent' => Order::where('customer_id', $customer->id)->where('status', 'Completed')->sum('total'),
+                'total_reservations' => Reservation::where('customer_id', $customer->id)->count(),
+            ];
+            // Data for the recent activity tables
+            $recent_orders = Order::where('customer_id', $customer->id)->latest()->take(5)->get();
+            $recent_reservations = Reservation::where('customer_id', $customer->id)
+                ->latest('reservation_time')
+                ->take(5)
+                ->get();
+        }
+        return view('pages.user.dashboard', compact('user', 'customer', 'kpis', 'recent_orders', 'recent_reservations'));
     }
 
     /**
@@ -39,7 +48,9 @@ class UserDashboardController extends Controller
      */
     public function profile()
     {
-        return view('pages.user.profile', ['user' => Auth::user()]);
+        $user = Auth::user();
+        $customer = $user->customer;
+        return view('pages.user.profile', compact('user', 'customer'));
     }
 
     /**
@@ -48,8 +59,9 @@ class UserDashboardController extends Controller
     public function orders()
     {
         $user = Auth::user();
-        $orders = Order::where('customer_id', $user->id)->latest()->paginate(10);
-        return view('pages.user.orders', compact('orders'));
+        $customer = $user->customer;
+        $orders = $customer ? Order::where('customer_id', $customer->id)->latest()->paginate(10) : collect();
+        return view('pages.user.orders', compact('orders', 'customer'));
     }
 
     /**
@@ -58,10 +70,11 @@ class UserDashboardController extends Controller
     public function reservations()
     {
         $user = Auth::user();
-        $reservations = Reservation::where('customer_id', $user->id)
+        $customer = $user->customer;
+        $reservations = $customer ? Reservation::where('customer_id', $customer->id)
             ->latest('reservation_time')
-            ->paginate(10);
-        return view('pages.user.reservations', compact('reservations'));
+            ->paginate(10) : collect();
+        return view('pages.user.reservations', compact('reservations', 'customer'));
     }
 
     /**

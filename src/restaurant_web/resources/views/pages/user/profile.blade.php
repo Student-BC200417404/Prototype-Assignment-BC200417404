@@ -18,31 +18,37 @@
             @method('PATCH')
 
             <div class="row g-3">
-                {{-- Name --}}
+                {{-- First Name --}}
                 <div class="col-md-6">
-                    <label for="name" class="form-label">Full Name</label>
-                    <input type="text" class="form-control" id="name" name="name" value="{{ old('name', $user->name) }}" required>
+                    <label for="first_name" class="form-label">First Name</label>
+                    <input type="text" class="form-control" id="first_name" name="first_name" value="{{ old('first_name', $customer ? $customer->first_name : $user->name) }}" required>
                 </div>
-
+                {{-- Last Name --}}
+                <div class="col-md-6">
+                    <label for="last_name" class="form-label">Last Name</label>
+                    <input type="text" class="form-control" id="last_name" name="last_name" value="{{ old('last_name', $customer ? $customer->last_name : '') }}">
+                </div>
                 {{-- Email --}}
                 <div class="col-md-6">
                     <label for="email" class="form-label">Email Address</label>
-                    <input type="email" class="form-control" id="email" name="email" value="{{ old('email', $user->email) }}" required>
+                    <input type="email" class="form-control" id="email" name="email" value="{{ old('email', $customer ? $customer->email : $user->email) }}" required>
                 </div>
-
                 {{-- Phone --}}
-                <div class="col-12">
+                <div class="col-md-6">
                     <label for="phone" class="form-label">Phone Number</label>
-                    <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone', $user->phone) }}">
+                    <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone', $customer ? $customer->phone : '') }}">
                 </div>
-
                 {{-- Address --}}
                 <div class="col-12">
                     <label for="address" class="form-label">Address</label>
-                    <textarea class="form-control" id="address" name="address" rows="3">{{ old('address', $user->address) }}</textarea>
+                    <textarea class="form-control" id="address" name="address" rows="3">{{ old('address', $customer ? $customer->address : '') }}</textarea>
+                </div>
+                {{-- Date of Birth --}}
+                <div class="col-md-6">
+                    <label for="date_of_birth" class="form-label">Date of Birth</label>
+                    <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value="{{ old('date_of_birth', $customer && $customer->date_of_birth ? $customer->date_of_birth->format('Y-m-d') : '') }}">
                 </div>
             </div>
-
             <div class="d-flex justify-content-end mt-4">
                 <button type="submit" class="btn btn-portal-primary">Save Changes</button>
             </div>

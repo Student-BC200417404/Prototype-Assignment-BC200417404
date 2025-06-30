@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\ErrorLogController;
 use App\Http\Controllers\Admin\Auth\AdminAuthController;
 use App\Http\Controllers\ChatBotController;
 use App\Http\Controllers\Admin\SubCategoryController;
+use App\Http\Controllers\Admin\DialogflowExportController;
 use App\Http\Controllers\UserDashboardController;
 /*
 |--------------------------------------------------------------------------
@@ -143,6 +144,21 @@ Route::prefix('admin')->group(function () {
         Route::post('subcategories/bulk-status', [SubCategoryController::class, 'bulkStatus'])->name('admin.subcategories.bulk-status');
         Route::patch('subcategories/{id}/toggle-status', [SubCategoryController::class, 'toggleStatus'])->name('admin.subcategories.toggle-status');
         Route::post('subcategories/check-name', [SubCategoryController::class, 'checkName'])->name('admin.subcategories.check-name');
+
+        // Dialogflow Export Routes
+        Route::prefix('dialogflow')->name('admin.dialogflow.')->group(function () {
+            Route::get('/export', [DialogflowExportController::class, 'exportAll'])->name('export.all');
+            Route::get('/export/menu-categories', [DialogflowExportController::class, 'exportMenuCategories'])->name('export.menu-categories');
+            Route::get('/export/menu-items', [DialogflowExportController::class, 'exportMenuItems'])->name('export.menu-items');
+            Route::get('/export/faq-topics', [DialogflowExportController::class, 'exportFaqTopics'])->name('export.faq-topics');
+            Route::get('/export/quantities', [DialogflowExportController::class, 'exportQuantities'])->name('export.quantities');
+            Route::get('/export/status-types', [DialogflowExportController::class, 'exportStatusTypes'])->name('export.status-types');
+            Route::get('/export/datetime', [DialogflowExportController::class, 'exportDateTime'])->name('export.datetime');
+            Route::get('/export/party-size', [DialogflowExportController::class, 'exportPartySize'])->name('export.party-size');
+            Route::get('/export/names', [DialogflowExportController::class, 'exportNames'])->name('export.names');
+            Route::get('/export/emails', [DialogflowExportController::class, 'exportEmails'])->name('export.emails');
+            Route::get('/export/phones', [DialogflowExportController::class, 'exportPhones'])->name('export.phones');
+        });
     });
 });
 
@@ -176,4 +192,14 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
 });
 
 Route::post('/reserve-table', [WebController::class, 'handleReservationForm'])->name('reserve.table');
+
+// DEV/ADMIN: Run migrations and seeders from browser (REMOVE IN PRODUCTION)
+Route::get('/dev/migrate', function () {
+    \Artisan::call('migrate', ['--force' => true]);
+    return 'Database migrated successfully!';
+});
+Route::get('/dev/seed', function () {
+    \Artisan::call('db:seed', ['--force' => true]);
+    return 'Database seeded successfully!';
+});
 

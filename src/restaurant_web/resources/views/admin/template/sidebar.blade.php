@@ -214,6 +214,12 @@
         </a>
       </li>
       <li>
+        <a href="{{ route('admin.dialogflow.export.all') }}">
+          <iconify-icon icon="solar:chat-round-dots-outline" class="menu-icon"></iconify-icon>
+          <span>Dialogflow Exports</span>
+        </a>
+      </li>
+      <li>
         <a href="{{ route('admin.test') }}">
           <iconify-icon icon="solar:flask-outline" class="menu-icon"></iconify-icon>
           <span>Test/Demo Page</span>

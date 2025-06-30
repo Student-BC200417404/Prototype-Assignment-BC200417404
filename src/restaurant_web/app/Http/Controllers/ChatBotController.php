@@ -3,317 +3,355 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use App\Models\Menu;
+use App\Models\Category;
 
 class ChatBotController extends Controller
 {
     /**
      * Handle incoming requests from Dialogflow.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * Uses session ID for per-chat state.
      */
     public function handleRequest(Request $request)
     {
-      
         $intent = $request->input('queryResult.intent.displayName');
-        // dd($request);   
+        $sessionId = $request->input('session');
         
-        switch ($intent) {
-            case 'Default Welcome Intent':
-                return $this->handleDefaultWelcome();
-            case 'Default Fallback Intent':
-                return $this->handleDefaultFallback();
-            case 'info.order':
-                return $this->handleInfoOrder();
-            case 'track.order':
-                return $this->handleTrackOrder();
-            case 'place.order':
-                return $this->handlePlaceOrder();
-            case 'new.order':
-                return $this->handleNewOrder();
-            case 'order.add':
-                return $this->handleOrderAdd();
-            case 'order.remove':
-                return $this->handleOrderRemove();
-            case 'menu':
-                return $this->handleGetMenu();
-            case 'menu.category':
-                return $this->handleGetCategory($request);
-            case 'make.reservation':
-                return $this->handleMakeReservation();
-            case 'info.reservation':
-                return $this->handleReservationDetails();
-            case 'checkout.order':
-                return $this->handleCheckoutOrder();
-            case 'get.customer.details':
-                return $this->handleGetCustomerDetails();
-            case 'cancel.order':
-                return $this->handleCancelOrder();
-            case 'modify.order':
-                return $this->handleModifyOrder();
-            case 'greetings':
-                return $this->handleGreetings();
-            case 'thanks':
-                return $this->handleThanks();
-            case 'goodbye':
-                return $this->handleGoodbye();
-            default:
-                return $this->handleUnknownQuery();
+        try {
+            switch ($intent) {
+                case 'Default Welcome Intent':
+                    return $this->handleDefaultWelcome();
+                case 'Default Fallback Intent':
+                    return $this->handleDefaultFallback($sessionId);
+                case 'cancel.order':
+                    return $this->handleCancelOrder($request, $sessionId);
+                case 'checkout.order':
+                    return $this->handleCheckoutOrder($request, $sessionId);
+                case 'customer.details':
+                    return $this->handleGetCustomerDetails($request, $sessionId);
+                case 'faq.inquiry':
+                    return $this->handleFaqInquiry($request, $sessionId);
+                case 'menu.category':
+                    return $this->handleMenuByCategory($request, $sessionId);
+                case 'menu.show':
+                    return $this->handleGetCategory($request, $sessionId);
+                case 'new.order':
+                    return $this->handleNewOrder($request, $sessionId);
+                case 'order.add':
+                    return $this->handleOrderAdd($request, $sessionId);
+                case 'order.remove':
+                    return $this->handleOrderRemove($request, $sessionId);
+                case 'reservation.create':
+                    return $this->handleMakeReservation($request, $sessionId);
+                case 'reservation.details':
+                    return $this->handleReservationDetails($request, $sessionId);
+                case 'reservation.status':
+                    return $this->handleReservationStatus($request, $sessionId);
+                case 'track.order':
+                    return $this->handleTrackOrder($request, $sessionId);
+                // case 'menu.by.category':
+                //     return $this->handleMenuByCategory($request, $sessionId);
+                default:
+                    return $this->handleUnknownQuery($sessionId);
+            }
+        } catch (\Throwable $e) {
+            // Use the base controller's error logging function
+            $this->logError($e, $request);
+            
+            return response()->json([
+                'fulfillmentText' => "Sorry, something went wrong. Please try again later."
+            ]);
         }
     }
 
-    /**
-     * Handle the order addition intent.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    private function handleOrderAdd(Request $request)
-    {
-        // Logic for adding an order
-        return response()->json([
-            'fulfillmentText' => 'Your order has been added successfully!'
-        ]);
-    }
+    // --- INTENT HANDLERS ---
 
-    /**
-     * Handle the order removal intent.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    private function handleOrderRemove(Request $request)
-    {
-        // Logic for removing an order
-        return response()->json([
-            'fulfillmentText' => 'Your order has been removed successfully!'
-        ]);
-    }
-
-    /**
-     * Handle the reservation intent.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    private function handleReservation(Request $request)
-    {
-        // Logic for making a reservation
-        return response()->json([
-            'fulfillmentText' => 'Your reservation has been made successfully!'
-        ]);
-    }
-
-    /**
-     * Handle the order tracking intent.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    private function handleTrackOrder(Request $request)
-    {
-        // Logic for tracking an order
-        return response()->json([
-            'fulfillmentText' => 'Your order is currently being prepared.'
-        ]);
-    }
-
-    /**
-     * Handle the order status intent.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    private function handleOrderStatus(Request $request)
-    {
-        // Logic for checking order status
-        return response()->json([
-            'fulfillmentText' => 'Your order is on the way!'
-        ]);
-    }
-
-    /**
-     * Handle the category retrieval intent.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    private function handleGetCategory(Request $request)
-    {
-        // Logic for retrieving categories
-        return response()->json([
-            'fulfillmentText' => 'Here are the categories: Pizza, Pasta, Salad.'
-        ]);
-    }
-
-    /**
-     * Handle the menu retrieval intent.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    private function handleGetMenu(Request $request)
-    {
-        // Logic for retrieving the menu
-        return response()->json([
-            'fulfillmentText' => 'Here is our menu: Pizza, Pasta, Salad, Dessert.'
-        ]);
-    }
-
-    /**
-     * Handle unknown queries.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    private function handleUnknownQuery()
-    {
-        $responses = [
-            "Sorry, I didn't understand that.",
-            "Can you please rephrase your question?",
-            "I'm not sure how to help with that."
-        ];
-
-        return response()->json([
-            'fulfillmentText' => $responses[array_rand($responses)]
-        ]);
-    }
-
-   
-    private function handleInfoOrder(Request $request)
-    {
-        return response()->json([
-            'fulfillmentText' => 'Let me check your order status. Could you please share your order ID?'
-        ]);
-    }
-
-    /**
-     * Handle the default welcome intent.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
     private function handleDefaultWelcome()
     {
         return response()->json(['fulfillmentText' => 'Hello! Welcome to EatzAI! 🍽️ How can I assist you today?']);
     }
 
-    /**
-     * Handle the default fallback intent.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    private function handleDefaultFallback()
+    private function handleDefaultFallback($sessionId)
     {
-        return response()->json(['fulfillmentText' => "I'm sorry, I didn't understand that. Can you please rephrase or select an option from the menu?"]);
+        $this->logSessionMessage($sessionId, 'fallback');
+        return response()->json([
+            'fulfillmentText' => "I'm sorry, I didn't understand that. Can you please rephrase or select an option from the menu?"
+        ]);
     }
 
-    /**
-     * Handle the place order intent.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    private function handlePlaceOrder()
+    private function handleCancelOrder(Request $request, $sessionId)
     {
-        return response()->json(['fulfillmentText' => 'Of course! What would you like to order today?']);
+        // Example: clear order from session
+        Cache::forget('chatbot_' . $sessionId . '_order');
+        return response()->json([
+            'fulfillmentText' => "Your order has been cancelled. If you need anything else, let me know!"
+        ]);
     }
 
-    /**
-     * Handle the new order intent.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    private function handleNewOrder()
+    private function handleCheckoutOrder(Request $request, $sessionId)
     {
-        return response()->json(['fulfillmentText' => 'Alright, starting a new order. Browse our menu and let me know your selections!']);
+        $order = Cache::get('chatbot_' . $sessionId . '_order', []);
+        if (empty($order)) {
+            $msg = "🛒 Your order is empty. Please add some items before checking out.";
+        } else {
+            $orderList = "- " . implode("\n- ", $order);
+            $msg = "🧾 Here is your order summary:\n\n$orderList\n\nThank you! Your order has been placed. You'll receive confirmation soon. Would you like anything else?";
+            Cache::forget('chatbot_' . $sessionId . '_order');
+        }
+        return response()->json(['fulfillmentText' => $msg]);
     }
 
-   
-    /**
-     * Handle the make reservation intent.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    private function handleMakeReservation()
+    private function handleGetCustomerDetails(Request $request, $sessionId)
     {
-        return response()->json(['fulfillmentText' => 'Sure! How many people and what time would you like to reserve for?']);
+        // Example: retrieve customer details from session or DB
+        $details = Cache::get('chatbot_' . $sessionId . '_customer', []);
+        if ($details) {
+            $msg = "Your details: Name: {$details['name']}, Phone: {$details['phone']}";
+        } else {
+            $msg = "I don't have your details yet. Please provide your name and phone number.";
+        }
+        return response()->json(['fulfillmentText' => $msg]);
     }
 
-    /**
-     * Handle the reservation details intent.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    private function handleReservationDetails()
+    private function handleFaqInquiry(Request $request, $sessionId)
     {
-        return response()->json(['fulfillmentText' => 'Let me check your reservation. Could you provide your name or phone number?']);
+        // Example: static FAQ response
+        return response()->json([
+            'fulfillmentText' => "Our restaurant is open from 10am to 10pm. We accept cash, card, and online payments."
+        ]);
     }
 
-    /**
-     * Handle the checkout order intent.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    private function handleCheckoutOrder()
+    private function handleGetCategory(Request $request, $sessionId)
     {
-        return response()->json(['fulfillmentText' => 'Alright! Please share your contact details to complete the checkout. 📋']);
+        try {
+            $categories = Category::where('is_active', true)->pluck('name')->toArray();
+            
+            if ($categories) {
+                $options = [];
+                foreach ($categories as $category) {
+                    $options[] = ['text' => $category];
+                }
+                
+                return response()->json([
+                    'fulfillmentText' => 'What would you like to explore?',
+                    'fulfillmentMessages' => [
+                        [
+                            'payload' => [
+                                'richContent' => [
+                                    [
+                                        [
+                                            'type' => 'info',
+                                            'subtitle' => 'Please choose a category below.',
+                                            'title' => 'What would you like to explore?'
+                                        ],
+                                        [
+                                            'type' => 'chips',
+                                            'options' => $options
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]);
+            } else {
+                return response()->json([
+                    'fulfillmentText' => 'Sorry, no categories are available at the moment. Please check back later!'
+                ]);
+            }
+        } catch (\Throwable $e) {
+            $this->logError($e, $request);
+            return response()->json([
+                'fulfillmentText' => "Sorry, there was an error loading categories. Please try again."
+            ]);
+        }
     }
 
-    /**
-     * Handle the get customer details intent.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    private function handleGetCustomerDetails()
+    private function handleMenuByCategory(Request $request, $sessionId)
     {
-        return response()->json(['fulfillmentText' => "Thank you! Your order is being processed. You'll receive confirmation shortly! ✅"]);
+        try {
+            $params = $request->input('queryResult.parameters', []);
+            $categoryName = $params['menu-category'] ?? null;
+            
+            if (!$categoryName) {
+                return response()->json([
+                    'fulfillmentText' => 'Please specify which category you would like to see.'
+                ]);
+            }
+            
+            // Get category ID
+            $category = Category::where('name', $categoryName)->where('is_active', true)->first();
+            
+            if (!$category) {
+                return response()->json([
+                    'fulfillmentText' => "Sorry, the category '$categoryName' is not available."
+                ]);
+            }
+            
+            // Get menu items for this category
+            $items = Menu::where('category_id', $category->id)
+                        ->where('is_available', true)
+                        ->get(['name', 'price', 'description']);
+            
+            if ($items->count() > 0) {
+                $menuList = '';
+                foreach ($items as $item) {
+                    $menuList .= "• **{$item->name}** - $" . number_format($item->price, 2);
+                    if ($item->description) {
+                        $menuList .= "\n  {$item->description}";
+                    }
+                    $menuList .= "\n\n";
+                }
+                
+                $msg = "🍽️ Here are the items in **$categoryName**:\n\n" . $menuList . "Would you like to add any of these items to your order?";
+                
+                return response()->json([
+                    'fulfillmentText' => $msg
+                ]);
+            } else {
+                return response()->json([
+                    'fulfillmentText' => "Sorry, no items are available in the $categoryName category at the moment."
+                ]);
+            }
+        } catch (\Throwable $e) {
+            $this->logError($e, $request);
+            return response()->json([
+                'fulfillmentText' => "Sorry, there was an error loading the menu. Please try again."
+            ]);
+        }
     }
 
-    /**
-     * Handle the cancel order intent.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    private function handleCancelOrder()
+    private function handleMenuShow(Request $request, $sessionId)
     {
-        return response()->json(['fulfillmentText' => "I'm sorry to hear that! Let me cancel your order. Can you confirm the order ID?"]);
+        $categories = Category::where('is_active', true)->pluck('name')->toArray();
+        
+        if ($categories) {
+            $options = [];
+            foreach ($categories as $category) {
+                $options[] = ['text' => $category];
+            }
+            
+            return response()->json([
+                'fulfillmentText' => 'What would you like to explore?',
+                'fulfillmentMessages' => [
+                    [
+                        'payload' => [
+                            'richContent' => [
+                                [
+                                    [
+                                        'type' => 'info',
+                                        'subtitle' => 'Please choose a category below.',
+                                        'title' => 'What would you like to explore?'
+                                    ],
+                                    [
+                                        'type' => 'chips',
+                                        'options' => $options
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]);
+        } else {
+            return response()->json([
+                'fulfillmentText' => 'Sorry, our menu is currently unavailable. Please check back later or ask for assistance!'
+            ]);
+        }
     }
 
-    /**
-     * Handle the modify order intent.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    private function handleModifyOrder()
+    private function handleNewOrder(Request $request, $sessionId)
     {
-        return response()->json(['fulfillmentText' => 'Of course! Tell me what changes you\'d like to make.']);
+        // Start a new order session
+        Cache::put('chatbot_' . $sessionId . '_order', [], 60);
+        return response()->json([
+            'fulfillmentText' => 'Starting a new order. What would you like to add?'
+        ]);
     }
 
-    /**
-     * Handle the greetings intent.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    private function handleGreetings()
+    private function handleOrderAdd(Request $request, $sessionId)
     {
-        return response()->json(['fulfillmentText' => 'Hi there! 👋 Hope you\'re having a great day! How can I help you today?']);
+        $params = $request->input('queryResult.parameters', []);
+        $item = $params['item'] ?? null;
+        $order = Cache::get('chatbot_' . $sessionId . '_order', []);
+        if ($item) {
+            $order[] = $item;
+            Cache::put('chatbot_' . $sessionId . '_order', $order, 60);
+            $msg = "✅ I've added *$item* to your order.\n\nWould you like to add more items or proceed to checkout?";
+        } else {
+            $msg = "Please specify what you want to add to your order.";
+        }
+        return response()->json(['fulfillmentText' => $msg]);
     }
 
-    /**
-     * Handle the thanks intent.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    private function handleThanks()
+    private function handleOrderRemove(Request $request, $sessionId)
     {
-        return response()->json(['fulfillmentText' => 'You\'re very welcome! 😊 Happy to help!']);
+        $params = $request->input('queryResult.parameters', []);
+        $item = $params['item'] ?? null;
+        $order = Cache::get('chatbot_' . $sessionId . '_order', []);
+        if ($item && in_array($item, $order)) {
+            $order = array_diff($order, [$item]);
+            Cache::put('chatbot_' . $sessionId . '_order', $order, 60);
+            $msg = "❌ *$item* has been removed from your order.\n\nWould you like to remove anything else or proceed to checkout?";
+        } else {
+            $msg = "That item is not in your order. Please specify another item to remove.";
+        }
+        return response()->json(['fulfillmentText' => $msg]);
     }
 
-    /**
-     * Handle the goodbye intent.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    private function handleGoodbye()
+    private function handleMakeReservation(Request $request, $sessionId)
     {
-        return response()->json(['fulfillmentText' => 'Goodbye! 👋 Hope to serve you again soon at EatzAI!']);
+        $params = $request->input('queryResult.parameters', []);
+        Cache::put('chatbot_' . $sessionId . '_reservation', $params, 60);
+        $msg = "📝 Your reservation request has been received!\n\nWe will confirm your reservation shortly. Is there anything else I can help you with?";
+        return response()->json(['fulfillmentText' => $msg]);
+    }
+
+    private function handleReservationDetails(Request $request, $sessionId)
+    {
+        $reservation = Cache::get('chatbot_' . $sessionId . '_reservation', []);
+        if ($reservation) {
+            $details = [];
+            foreach ($reservation as $key => $value) {
+                $details[] = ucfirst($key) . ': ' . $value;
+            }
+            $msg = "📅 Here are your reservation details:\n" . implode("\n", $details) . "\n\nWould you like to update or cancel your reservation?";
+        } else {
+            $msg = "No reservation found for your session. Would you like to make a new reservation?";
+        }
+        return response()->json(['fulfillmentText' => $msg]);
+    }
+
+    private function handleReservationStatus(Request $request, $sessionId)
+    {
+        $msg = "✅ Your reservation is confirmed!\n\nIs there anything else I can assist you with?";
+        return response()->json(['fulfillmentText' => $msg]);
+    }
+
+    private function handleTrackOrder(Request $request, $sessionId)
+    {
+        $msg = "🚚 Your order is currently being prepared and will be on its way soon!\n\nWould you like to track anything else?";
+        return response()->json(['fulfillmentText' => $msg]);
+    }
+
+    private function handleUnknownQuery($sessionId)
+    {
+        $this->logSessionMessage($sessionId, 'unknown');
+        $responses = [
+            "Sorry, I didn't understand that.",
+            "Can you please rephrase your question?",
+            "I'm not sure how to help with that."
+        ];
+        return response()->json([
+            'fulfillmentText' => $responses[array_rand($responses)]
+        ]);
+    }
+
+    // --- SESSION LOGGING (optional for debugging) ---
+    private function logSessionMessage($sessionId, $type)
+    {
+        // You can log session activity here for analytics/debugging
+        // Example: \Log::info("Chatbot session $sessionId: $type");
     }
 }

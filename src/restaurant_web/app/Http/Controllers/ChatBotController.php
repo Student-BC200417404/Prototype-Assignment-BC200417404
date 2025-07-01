@@ -413,7 +413,63 @@ class ChatBotController extends Controller
 
     private function handleReservationStatus(Request $request, $sessionId)
     {
-        $msg = "✅ Your reservation is confirmed!\n\nIs there anything else I can assist you with?";
+        $params = $request->input('queryResult.parameters', []);
+        $email = $params['email'] ?? null;
+
+        if (!$email) {
+            return response()->json(['fulfillmentText' => "Please provide your email address to check your reservation status."]);
+        }
+
+        // Find customer by email
+        $customer = Customer::where('email', $email)->first();
+        
+        if (!$customer) {
+            return response()->json(['fulfillmentText' => "No reservations found for email: $email. Please check your email address or make a new reservation."]);
+        }
+
+        // Get the most recent reservation for this customer
+        $reservation = $customer->reservations()
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if (!$reservation) {
+            return response()->json(['fulfillmentText' => "No reservations found for email: $email. Please check your email address or make a new reservation."]);
+        }
+
+        // Format the reservation details
+        $statusMap = [
+            'pending' => '🕒 Pending confirmation',
+            'confirmed' => '✅ Confirmed',
+            'cancelled' => '❌ Cancelled',
+            'completed' => '🎉 Completed',
+            'no_show' => '⏰ No show'
+        ];
+
+        $status = $statusMap[$reservation->status] ?? ucfirst($reservation->status);
+        $date = $reservation->reservation_date->format('F j, Y');
+        $time = $reservation->reservation_time->format('g:i A');
+        $guests = $reservation->number_of_guests;
+
+        $msg = "📅 **Reservation Status**\n\n" .
+            "**Name:** {$customer->first_name} {$customer->last_name}\n" .
+            "**Email:** $email\n" .
+            "**Date:** $date\n" .
+            "**Time:** $time\n" .
+            "**Guests:** $guests\n" .
+            "**Status:** $status\n\n";
+
+        if ($reservation->status === 'pending') {
+            $msg .= "Your reservation is pending confirmation. We'll contact you soon to confirm your booking.";
+        } elseif ($reservation->status === 'confirmed') {
+            $msg .= "Your reservation is confirmed! We look forward to serving you.";
+        } elseif ($reservation->status === 'cancelled') {
+            $msg .= "This reservation has been cancelled.";
+        } elseif ($reservation->status === 'completed') {
+            $msg .= "This reservation has been completed. Thank you for dining with us!";
+        }
+
+        $msg .= "\n\nIs there anything else I can help you with?";
+
         return response()->json(['fulfillmentText' => $msg]);
     }
 

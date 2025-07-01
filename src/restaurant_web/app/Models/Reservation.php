@@ -47,6 +47,14 @@ class Reservation extends Model
     }
 
     /**
+     * Get the table for this reservation.
+     */
+    public function table()
+    {
+        return $this->belongsTo(Table::class, 'table_number', 'table_number');
+    }
+
+    /**
      * Check if reservation is pending
      */
     public function isPending()

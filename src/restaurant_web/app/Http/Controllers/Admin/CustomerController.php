@@ -22,10 +22,16 @@ class CustomerController extends Controller
             $customers = Customer::with('user')->select('customers.*');
 
             return DataTables::of($customers)
-                ->addColumn('full_name', function ($customer) {
+                ->addColumn('checkbox', function ($customer) {
+                    return '<input type="checkbox" class="form-check-input row-checkbox" value="' . $customer->id . '">';
+                })
+                ->addColumn('name', function ($customer) {
                     return $customer->first_name . ' ' . $customer->last_name;
                 })
-                ->addColumn('user_status', function ($customer) {
+                ->addColumn('membership', function ($customer) {
+                    return $customer->membership ?? '<span class="badge bg-secondary">N/A</span>';
+                })
+                ->addColumn('status', function ($customer) {
                     if ($customer->user) {
                         return $customer->user->is_active ? 
                             '<span class="badge bg-success">Active</span>' : 
@@ -36,10 +42,11 @@ class CustomerController extends Controller
                 ->addColumn('total_orders', function ($customer) {
                     return $customer->orders()->count();
                 })
-                ->addColumn('total_spent', function ($customer) {
-                    return '$' . number_format($customer->orders()->sum('total'), 2);
+                ->addColumn('created_at', function ($customer) {
+                    return $customer->created_at ? $customer->created_at->format('Y-m-d') : '';
                 })
-                ->addColumn('action', function ($customer) {
+                ->addColumn('actions', function ($customer) {
+                    $name = $customer->first_name . ' ' . $customer->last_name;
                     return '<div class="btn-group" role="group">
                                 <a href="' . route('admin.customers.show', $customer->id) . '" class="btn btn-sm btn-info">
                                     <i class="ri-eye-line"></i> View
@@ -47,12 +54,12 @@ class CustomerController extends Controller
                                 <a href="' . route('admin.customers.edit', $customer->id) . '" class="btn btn-sm btn-warning">
                                     <i class="ri-edit-line"></i> Edit
                                 </a>
-                                <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="' . $customer->id . '">
+                                <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="' . $customer->id . '" data-name="' . e($name) . '">
                                     <i class="ri-delete-bin-line"></i> Delete
                                 </button>
                             </div>';
                 })
-                ->rawColumns(['user_status', 'action'])
+                ->rawColumns(['checkbox', 'membership', 'status', 'actions'])
                 ->make(true);
         }
 

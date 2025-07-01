@@ -142,7 +142,7 @@ $(document).ready(function() {
         processing: true,
         serverSide: true,
         ajax: {
-            url: '{{ route("admin.customers.index") }}',
+            url: '{{ route("admin.customers.data") }}',
             data: function(d) {
                 d.status_filter = $('#status-filter').val();
                 d.membership_filter = $('#membership-filter').val();

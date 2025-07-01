@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Cache;
 use App\Models\Menu;
 use App\Models\Category;
 use App\Models\Order;
+use App\Models\Customer;
+use App\Models\User;
 
 class ChatBotController extends Controller
 {
@@ -327,22 +329,85 @@ class ChatBotController extends Controller
     {
         $params = $request->input('queryResult.parameters', []);
         Cache::put('chatbot_' . $sessionId . '_reservation', $params, 60);
-        $msg = "📝 Your reservation request has been received!\n\nWe will confirm your reservation shortly. Is there anything else I can help you with?";
+        // Reservation prompts
+        $reservationPrompts = [
+            "Sure, I'd be happy to help with your reservation. May I have a few details like your name, number of people, and whether it's for lunch or dinner?",
+            "Absolutely! Let's get your table booked. Could you please tell me your name, how many people are joining, and if it's for lunch or dinner?",
+            "Of course! To reserve a table, I just need a few details—your name, number of guests, and the time you'd like to dine.",
+            "I'd love to help with that! Can you share your name, the number of people, and whether it's for lunch or dinner?",
+            "No problem! I can assist you with the reservation. May I know your name, how many seats you need, and if it's for lunch or dinner?"
+        ];
+        $msg = $reservationPrompts[array_rand($reservationPrompts)];
         return response()->json(['fulfillmentText' => $msg]);
     }
 
     private function handleReservationDetails(Request $request, $sessionId)
     {
-        $reservation = Cache::get('chatbot_' . $sessionId . '_reservation', []);
-        if ($reservation) {
-            $details = [];
-            foreach ($reservation as $key => $value) {
-                $details[] = ucfirst($key) . ': ' . $value;
-            }
-            $msg = "📅 Here are your reservation details:\n" . implode("\n", $details) . "\n\nWould you like to update or cancel your reservation?";
-        } else {
-            $msg = "No reservation found for your session. Would you like to make a new reservation?";
+        $params = $request->input('queryResult.parameters', []);
+        // Extract parameters
+        $personObj = $params['person'] ?? null;
+        $person = is_array($personObj) && isset($personObj['name']) ? $personObj['name'] : (is_string($personObj) ? $personObj : null);
+        $mealType = $params['meal-type'] ?? null;
+        $time = $params['time'] ?? null;
+        $email = $params['email'] ?? null;
+        $phone = $params['phone_number'] ?? null;
+        $date = $params['date'] ?? null;
+
+        // Validate required fields
+        if (!$person || !$time || !$email || !$phone || !$date) {
+            return response()->json(['fulfillmentText' => 'Some required reservation details are missing. Please provide all required information (name, email, phone, date, and time).']);
         }
+
+        // Find or create customer by email
+        $customer = Customer::where('email', $email)->first();
+        if (!$customer) {
+            // Try to find a user with this email
+            $user = User::where('email', $email)->first();
+            if (!$user) {
+                $user = User::create([
+                    'name' => $person,
+                    'email' => $email,
+                    'password' => bcrypt(uniqid()), // random password
+                    'role' => 'customer',
+                ]);
+            }
+            $customer = Customer::create([
+                'user_id' => $user->id,
+                'first_name' => $person,
+                'last_name' => '',
+                'email' => $email,
+                'phone' => $phone,
+            ]);
+        }
+
+        // Create reservation
+        $reservation = Reservation::create([
+            'customer_id' => $customer->id,
+            'reservation_date' => $date,
+            'reservation_time' => $time,
+            'number_of_guests' => 1, // Default to 1, can be improved if guests param is available
+            'status' => 'pending',
+            'special_requests' => null,
+        ]);
+
+        // Store in cache for session reference
+        Cache::put('chatbot_' . $sessionId . '_reservation', [
+            'person' => $person,
+            'meal-type' => $mealType,
+            'time' => $time,
+            'email' => $email,
+            'phone_number' => $phone,
+            'date' => $date,
+        ], 60);
+
+        $msg = "📝 Your reservation has been created!\n\n" .
+            "Name: $person\n" .
+            "Email: $email\n" .
+            "Phone: $phone\n" .
+            "Date: $date\n" .
+            "Time: $time\n" .
+            "Meal: $mealType\n\n" .
+            "We will confirm your reservation shortly. Is there anything else I can help you with?";
         return response()->json(['fulfillmentText' => $msg]);
     }
 
